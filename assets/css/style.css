@@ -1039,3 +1039,20 @@ html{accent-color:var(--leaf);scrollbar-color:#b9cfbf transparent}
 .staff-table table{table-layout:fixed}
 .staff-table thead th:first-child{width:34%}
 .staff-table tfoot th,.staff-table tfoot td{font-weight:500}
+
+/* Bảng viên chức quản lý Khoa */
+.mgr-table{overflow-x:auto;background:#fff;border-radius:12px;padding:8px}
+.mgr-table table{width:100%;min-width:760px;border-collapse:separate;border-spacing:6px;font-size:15.5px;text-align:center}
+.mgr-table th,.mgr-table td{padding:16px 12px;border-radius:2px}
+.mgr-table thead th{background:#cfe8f7;font-weight:700;color:#111}
+.mgr-table tbody th{background:#cfe8f7;font-weight:700;color:#111;width:17%}
+.mgr-table tbody td{background:#ecf7fd;color:#24303f}
+.mgr-table td:nth-child(n){font-variant-numeric:tabular-nums}
+.mgr-table .mgr-sub th{background:#cfe8f7;font-weight:600;width:auto}
+@media (max-width:560px){.mgr-table table{font-size:14px}}
+.mgr-table table{border-spacing:4px;font-size:15px}
+.mgr-table th,.mgr-table td{padding:12px 10px}
+.mgr-table td:nth-child(n+2):nth-last-child(n+2),.mgr-table thead th:nth-child(3),.mgr-table thead th:nth-child(4){white-space:nowrap}
+.mgr-table tbody th{width:auto;white-space:nowrap}
+.mgr-table td{white-space:nowrap}
+.mgr-table td:last-child{white-space:normal}
