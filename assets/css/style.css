@@ -71,7 +71,7 @@ a{color:var(--blue);text-decoration:none}
 .stack{display:flex;flex-direction:column;gap:16px}
 
 /* Giới thiệu */
-.sub{padding:20px 22px;border-left:4px solid var(--teal);background:var(--bg-alt);border-radius:0 var(--radius) var(--radius) 0}
+.sub{padding:20px 22px;background:var(--bg-alt);border-radius:0 var(--radius) var(--radius) 0}
 .sub h3{font-size:18px;color:var(--blue);margin-bottom:4px}
 .video__title{font-size:18px;color:var(--blue);margin-bottom:12px}
 .video__frame{position:relative;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);background:#000}
@@ -79,17 +79,17 @@ a{color:var(--blue);text-decoration:none}
 
 /* Cơ cấu */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:56px}
-.stat{background:#fff;border-radius:var(--radius);padding:28px;text-align:center;box-shadow:var(--shadow);border-top:4px solid var(--gold)}
+.stat{background:#fff;border-radius:var(--radius);padding:28px;text-align:center;box-shadow:var(--shadow)}
 .stat strong{display:block;font-size:44px;font-weight:800;color:var(--blue);line-height:1}
 .stat span{color:var(--muted);font-weight:500}
-.block-title{font-size:20px;color:var(--blue-dark);margin:0 0 20px;padding-left:12px;border-left:4px solid var(--gold)}
+.block-title{font-size:20px;color:var(--blue-dark);margin:0 0 20px}
 .grid--3 + .block-title{margin-top:56px}
 .person{background:#fff;border-radius:var(--radius);padding:28px 20px;text-align:center;box-shadow:var(--shadow)}
 .person__avatar{width:96px;height:96px;border-radius:50%;margin:0 auto 14px;background:linear-gradient(135deg,#dbe8f6,#c3e6e5);border:3px solid var(--gold)}
 .person h4{font-size:17px}
 .person p{color:var(--teal);font-weight:600;font-size:14px}
-.card{background:#fff;border-radius:var(--radius);padding:26px 22px;box-shadow:var(--shadow);transition:.25s;border-bottom:4px solid transparent}
-.card:hover{transform:translateY(-4px);border-bottom-color:var(--teal)}
+.card{background:#fff;border-radius:var(--radius);padding:26px 22px;box-shadow:var(--shadow);transition:.25s}
+
 .card__icon{font-size:30px;width:56px;height:56px;display:grid;place-items:center;background:var(--bg-alt);border-radius:12px;margin-bottom:14px}
 .card h4{font-size:17px;color:var(--blue-dark);margin-bottom:10px;line-height:1.35}
 .card__list{list-style:none;font-size:14px;color:var(--muted)}
@@ -406,12 +406,12 @@ a{color:var(--blue);text-decoration:none}
 .home-cc .g-text{margin-bottom:18px}
 .bomon-grid{gap:14px}
 .bomon-grid .card{display:block;padding:18px}
-.bomon-grid .card h4{font-size:15.5px;margin-bottom:6px}
+.bomon-grid .card h3{font-size:15.5px;margin-bottom:6px}
 .card__more{font-size:13.5px;font-weight:600;color:var(--teal)}
 .why{align-items:center}
 .why__imgs{display:grid;gap:16px}
 .feedback-grid{display:grid;grid-template-columns:300px 1fr;gap:32px;align-items:start}
-.qr-card{background:#fff;border-radius:16px;padding:22px;text-align:center;box-shadow:var(--shadow);border-top:4px solid var(--gold)}
+.qr-card{background:#fff;border-radius:16px;padding:22px;text-align:center;box-shadow:var(--shadow)}
 .qr-card img{width:100%;max-width:240px;margin:0 auto 10px}
 .qr-card p{font-weight:600;color:var(--blue-dark)}
 .faq h3{font-size:20px;color:var(--blue-dark);margin-bottom:14px;text-transform:uppercase}
@@ -548,7 +548,7 @@ h1,h2,h3,h4,h5{font-weight:600}
 .card:hover{transform:none;border-color:var(--line-2);background:var(--bg-alt)}
 .bomon-grid{gap:12px}
 .bomon-grid .card{display:flex;flex-direction:column;gap:8px;padding:16px 20px}
-.bomon-grid .card h4{font-size:16px;line-height:24px;font-weight:500;color:var(--ink);margin:0}
+.bomon-grid .card h3{font-size:16px;line-height:24px;font-weight:500;color:var(--ink);margin:0}
 .card__more{font-size:14px;font-weight:500;color:var(--blue);margin-top:auto}
 .card__icon{display:none}
 .g-text b,.g-text strong{font-weight:600}
@@ -624,8 +624,8 @@ h1,h2,h3,h4,h5{font-weight:600}
 .person p{color:var(--ink-2);font-weight:500}
 .stat{box-shadow:none;border:1px solid var(--line);border-top:1px solid var(--line)}
 .stat strong{font-family:var(--mono);font-weight:500;font-size:32px;font-variant-numeric:tabular-nums}
-.block-title{border-left:2px solid var(--blue);font-weight:500;color:var(--ink)}
-.sub{border-left:2px solid var(--blue)}
+.block-title{font-weight:500;color:var(--ink)}
+
 .sub h3{color:var(--ink)}
 
 /* Nội dung chuyển từ Google Sites */
@@ -706,3 +706,92 @@ h1,h2,h3,h4,h5{font-weight:600}
 .hero h1{text-wrap:balance}
 @media (max-width:980px){.hero__grid{grid-template-columns:1fr;gap:32px}}
 @media (max-width:760px){.g-text .ta-justify,.intro-text .ta-justify{text-align:left}}
+
+/* =========================================================
+   VƯỜN HOA · thêm màu sắc và hoa lá cho trang giáo dục
+   ========================================================= */
+:root{
+  --leaf:#2f7d4f;--leaf-soft:#eaf5ec;
+  --rose:#b0344f;--rose-soft:#fdecef;
+  --sun:#8a5600;--sun-soft:#fff5dd;
+  --sky:#1f6fb5;--sky-soft:#e8f2fc;
+  --cream:#fffaf1;
+}
+/* Đầu trang chủ: nền kem ấm, bó hoa hai góc */
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--cream),#fff6e6);isolation:isolate}
+.hero__grid{position:relative;z-index:1}
+.hero__flower{position:absolute;z-index:0;pointer-events:none;width:320px;height:auto;opacity:.95}
+.hero__flower--a{left:-40px;bottom:-24px}
+.hero__flower--b{right:-30px;top:-40px;transform:scale(-1,-1);width:260px;opacity:.8}
+.hero__eyebrow .code{background:var(--sun-soft);border-color:rgba(168,107,0,.25);color:var(--sun)}
+.hero h1{color:var(--ink)}
+.hero__photo{box-shadow:0 12px 32px rgba(120,80,20,.12);border-color:rgba(168,107,0,.15)}
+.hero__photo figcaption{background:var(--cream)}
+
+/* Tiêu đề mục: mã màu + cành hoa nhỏ */
+.section__head h2::after{content:"";display:inline-block;width:56px;height:36px;margin-left:12px;vertical-align:-6px;background:url(../img/hoa/canh-nho.svg) center/contain no-repeat}
+#gioi-thieu .section__tag{color:var(--sky);background:var(--sky-soft);border-color:transparent}
+#co-cau .section__tag{color:var(--leaf);background:var(--leaf-soft);border-color:transparent}
+#dao-tao .section__tag{color:var(--rose);background:var(--rose-soft);border-color:transparent}
+#gop-y .section__tag{color:var(--sun);background:var(--sun-soft);border-color:transparent}
+.section--alt{background:#f6faf4}
+#gop-y.section--alt{background:var(--cream)}
+
+/* Phiếu tổng hợp: mỗi dòng một màu */
+.slip{border-color:rgba(47,125,79,.2)}
+.slip__head{background:var(--leaf-soft);border-bottom-color:rgba(47,125,79,.25);color:var(--leaf)}
+.slip__head .code{color:var(--leaf)}
+.slip__rows > div:nth-child(1) dd{color:var(--sky)}
+.slip__rows > div:nth-child(2) dd{color:var(--leaf)}
+.slip__rows > div:nth-child(3) dd{color:var(--rose)}
+
+/* Thẻ bộ môn: mỗi bộ môn một màu */
+.bomon-grid .card{background:#fff}
+.bomon-grid .card .code{color:var(--c)}
+.bomon-grid .card:hover{background:var(--cs)}
+.bomon-grid .card:nth-child(1){--c:var(--sky);--cs:var(--sky-soft)}
+.bomon-grid .card:nth-child(2){--c:var(--leaf);--cs:var(--leaf-soft)}
+.bomon-grid .card:nth-child(3){--c:var(--rose);--cs:var(--rose-soft)}
+.bomon-grid .card:nth-child(4){--c:var(--sun);--cs:var(--sun-soft)}
+.bomon-grid .card .card__more{color:var(--c)}
+
+/* Góp ý */
+.qr-card{background:#fff;border-color:rgba(168,107,0,.18);position:relative}
+.qr-card::after{content:"";position:absolute;right:-12px;bottom:-14px;width:84px;height:54px;background:url(../img/hoa/canh-nho.svg) center/contain no-repeat}
+.accordion[open] summary{background:var(--sun-soft)}
+
+/* Trang con: dải đầu nền xanh lá nhạt, bó hoa góc phải */
+.page-hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#f3faf2,var(--leaf-soft))}
+.page-hero::after{content:"";position:absolute;right:-20px;bottom:-30px;width:240px;height:212px;background:url(../img/hoa/bo-hoa.svg) center/contain no-repeat;transform:scaleX(-1);opacity:.9;pointer-events:none}
+.page-hero .container{position:relative;z-index:1}
+.sidenav a.active{background:var(--leaf-soft);color:var(--leaf)}
+.g-sec--band,.page-layout--side .g-sec--band{background:var(--leaf-soft);border-color:rgba(47,125,79,.15)}
+.article-page{background:linear-gradient(180deg,var(--cream),#f7faf6)}
+.article__cat{color:var(--leaf)}
+
+/* Chân trang: viền hoa phía trên */
+.footer{position:relative;margin-top:44px;background:#14321f}
+.footer::before{content:"";position:absolute;left:0;right:0;top:-44px;height:44px;background:url(../img/hoa/vien-hoa.svg) repeat-x left bottom/120px 44px}
+.footer__bottom{border-top-color:rgba(255,255,255,.1)}
+
+@media (max-width:980px){.hero__flower--a{width:200px;left:-50px;bottom:-30px;opacity:.6}.hero__flower--b{width:180px}}
+@media (max-width:560px){.section__head h2::after{width:44px;height:28px}.page-hero::after{width:150px;height:132px;opacity:.5}.hero__flower--b{display:none}}
+
+/* impeccable polish */
+::selection{background:#fbd3db;color:var(--ink)}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
+html{accent-color:var(--leaf);scrollbar-color:#b9cfbf transparent}
+.section__head{gap:0}
+.section__head h2{text-wrap:balance}
+.hero__lead{max-width:34rem}
+.hero__photo{border:0;box-shadow:0 16px 40px rgba(120,80,20,.14)}
+/* thẻ bộ môn: nền màu nhạt toàn thẻ, không viền một cạnh */
+.bomon-grid .card{border:1px solid transparent;border-top:1px solid transparent;background:var(--cs);gap:12px}
+.bomon-grid .card:hover{background:#fff;border-color:var(--c)}
+.card__flower{display:block;width:24px;height:24px;background:var(--c);-webkit-mask:url(../img/hoa/bong.svg) center/contain no-repeat;mask:url(../img/hoa/bong.svg) center/contain no-repeat}
+.block-title,.sub{border-left:0}
+.block-title{padding-left:0}
+.sub{border:1px solid var(--line);border-radius:12px}
+/* Tại sao chọn ngành: chữ bắt đầu cùng hàng với ảnh */
+.why{align-items:start}
+.slip__head{justify-content:flex-start}
