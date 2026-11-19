@@ -22,6 +22,8 @@ const MENU = [
   { title: 'Kiến thức đời sống', href: 'kien-thuc-doi-song.html' },
 ];
 
+const CHEVRON = '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
 (function () {
   const current = (location.pathname.split('/').pop() || 'index.html');
   const isActive = item => item.href === current || (item.children || []).some(c => c.href === current);
@@ -35,7 +37,7 @@ const MENU = [
       `<li><a href="${c.href}" class="${c.href === current ? 'active' : ''}">${c.title}</a></li>`).join('');
     return `<li class="has-sub">
       <a href="${item.href}" class="${isActive(item) ? 'active' : ''}">${item.title}</a>
-      <button class="sub-toggle" aria-label="Mở mục con của ${item.title}" aria-expanded="false">▾</button>
+      <button class="sub-toggle" aria-label="Mở mục con của ${item.title}" aria-expanded="false">${CHEVRON}</button>
       <ul class="submenu">${sub}</ul>
     </li>`;
   }).join('');
@@ -56,7 +58,11 @@ const MENU = [
         <span class="brand__text"><small>Trường Cao đẳng Y tế Cần Thơ</small><strong>Khoa Dược - Xét nghiệm</strong></span>
       </a>
       <button class="nav-toggle" aria-label="Mở menu" aria-expanded="false"><span></span><span></span><span></span></button>
-      <nav class="nav" aria-label="Menu chính"><ul class="menu">${navHtml}</ul></nav>
+      <nav class="nav" aria-label="Menu chính"><ul class="menu">${navHtml}
+        <li class="has-sub more" hidden>
+          <button class="more-btn" aria-expanded="false">Thêm ${CHEVRON}</button>
+          <ul class="submenu submenu--right"></ul>
+        </li></ul></nav>
     </div>
   </header>`;
 
