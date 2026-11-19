@@ -979,3 +979,49 @@ html{accent-color:var(--leaf);scrollbar-color:#b9cfbf transparent}
 }
 .hero__facts div{flex-direction:column;justify-content:flex-start}
 .hero__facts dd{order:-1}
+
+/* Sơ đồ: nhánh và mũi tên như sơ đồ gốc của Khoa */
+.org{--k:#1c1c1c;--w:3px;--g:16px}
+.org__line{width:var(--w);background:var(--k);height:28px;margin:0}
+.org__line::after{border-top-color:var(--k)}
+.org__line--plain::after{display:none}
+.org__split,.org__depts{--c1:calc((100% - 3*var(--g))/8);--c4:calc((100% - 3*var(--g))*7/8 + 3*var(--g))}
+.org__split{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:var(--g);width:100%;padding-top:36px}
+.org__split::before{content:"";position:absolute;top:0;left:calc(50% - var(--w)/2);right:calc(100% - var(--c4) - var(--w)/2);height:var(--w);background:var(--k)}
+.org__units{grid-column:2/4}
+.org__admin{grid-column:4}
+.org__split .org__box{position:relative;border-radius:999px;min-height:76px;justify-content:center;align-items:center;text-align:center;padding:12px 20px;margin:0}
+.org__units strong{font-size:18px}
+.org__admin strong{font-size:16px}
+.org__split .org__box::before,.org__depts .org__dept::before,.org__members::before{content:"";position:absolute;left:50%;transform:translateX(-50%);width:var(--w);background:var(--k)}
+.org__split .org__box::after,.org__dept::after,.org__members::after{content:"";position:absolute;left:50%;transform:translateX(-50%);border:8px solid transparent;border-top:10px solid var(--k);border-bottom:0}
+.org__split .org__box::before{top:-36px;height:28px}
+.org__split .org__box::after{top:-10px}
+/* từ CÁC BỘ MÔN xuống thanh ngang rồi tỏa ra 4 bộ môn */
+.org__depts{border-top:0!important;margin-top:0;padding-top:72px;position:relative}
+.org__depts::before{content:"";position:absolute;top:0;left:calc(50% - var(--w)/2);width:var(--w);height:36px;background:var(--k)}
+.org__depts::after{content:"";position:absolute;top:36px;left:calc(var(--c1) - var(--w)/2);right:calc(100% - var(--c4) - var(--w)/2);height:var(--w);background:var(--k)}
+.org__dept{position:relative;gap:36px}
+.org__depts .org__dept::before{top:-36px;height:28px}
+.org__dept::after{top:-10px}
+.org__dname{border-radius:999px;background:#fbd75b;font-weight:700;font-size:14px;min-height:72px;padding:12px 16px}
+.org__members{position:relative}
+.org__members::before{top:-36px;height:28px}
+.org__members::after{top:-10px}
+@media (max-width:900px){
+  .org__split{grid-template-columns:1fr 1fr}
+  .org__units{grid-column:1}.org__admin{grid-column:2}
+  .org__split{--c4:75%}
+  .org__split::before{left:25%;right:25%}
+  .org__line--plain{height:0}
+  .org__depts::before,.org__depts::after,.org__depts .org__dept::before,.org__dept::after{display:none}
+  .org__depts{padding-top:28px}
+}
+@media (max-width:520px){
+  .org__split{grid-template-columns:1fr;padding-top:0}
+  .org__split::before,.org__split .org__box::before,.org__split .org__box::after{display:none}
+  .org__units,.org__admin{grid-column:1}
+}
+.org__units{justify-self:center;width:min(100%,320px)}
+@media (max-width:900px){.org__units{width:100%}}
+@media (max-width:520px){.org__split{padding-top:16px;gap:12px}.org__line--plain{height:0}}
