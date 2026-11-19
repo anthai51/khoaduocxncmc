@@ -1025,3 +1025,17 @@ html{accent-color:var(--leaf);scrollbar-color:#b9cfbf transparent}
 .org__units{justify-self:center;width:min(100%,320px)}
 @media (max-width:900px){.org__units{width:100%}}
 @media (max-width:520px){.org__split{padding-top:16px;gap:12px}.org__line--plain{height:0}}
+
+/* Bảng trình độ đào tạo (thay ảnh cũ, sửa được trực tiếp) */
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.staff-table{overflow-x:auto;border-radius:12px}
+.staff-table table{width:100%;border-collapse:separate;border-spacing:4px;font-size:17px;text-align:center;font-variant-numeric:tabular-nums;min-width:480px}
+.staff-table th,.staff-table td{padding:24px 12px;border-radius:4px}
+.staff-table thead th,.staff-table tfoot th,.staff-table tfoot td,.staff-table tbody th{background:#76cdd4;color:#111;font-weight:600}
+.staff-table tbody th{font-weight:500}
+.staff-table tbody td{background:#dbeff6;color:#111}
+.staff-table thead th{font-weight:700}
+@media (max-width:560px){.staff-table table{font-size:15px}.staff-table th,.staff-table td{padding:16px 8px}}
+.staff-table table{table-layout:fixed}
+.staff-table thead th:first-child{width:34%}
+.staff-table tfoot th,.staff-table tfoot td{font-weight:500}
