@@ -56,7 +56,7 @@ onScroll();
 const io = new IntersectionObserver(entries => entries.forEach(e => {
   if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
 }), { threshold: 0.1 });
-document.querySelectorAll('.section__head, .sub, .video, .stat, .card, .major, .news, .feedback, .g-col')
+document.querySelectorAll('main > section:first-child .hero__content')
   .forEach(el => { el.classList.add('reveal'); io.observe(el); });
 
 // Băng chuyền ảnh (carousel)

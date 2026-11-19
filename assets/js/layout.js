@@ -47,10 +47,10 @@ const CHEVRON = '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="tr
   if (header) header.outerHTML = `
   <div class="topbar">
     <div class="container topbar__inner">
-      <span>📞 (84-0292) 3 899 017</span>
-      <span>✉️ khoaduoccdytct@gmail.com</span>
-      <a href="http://cmc.edu.vn" target="_blank" rel="noopener">🌐 cmc.edu.vn</a>
-      <a href="${BASE}phong-thuc-hanh/index.html" class="topbar__login">🔐 Quản lý phòng thực hành</a>
+      <span><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>(84-0292) 3 899 017</span>
+      <span><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>khoaduoccdytct@gmail.com</span>
+      <a href="http://cmc.edu.vn" target="_blank" rel="noopener"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>cmc.edu.vn</a>
+      <a href="${BASE}phong-thuc-hanh/index.html" class="topbar__login"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Quản lý phòng thực hành</a>
     </div>
   </div>
   <header class="header" id="top">
@@ -89,7 +89,7 @@ const CHEVRON = '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="tr
         <h4>Liên kết nhanh</h4>
         <ul class="footer__links">
           ${MENU.filter(m => m.href !== 'index.html').map(m => `<li><a href="${BASE}${m.href}">${m.title}</a></li>`).join('')}
-          <li><a href="${BASE}phong-thuc-hanh/index.html">🔐 Quản lý phòng thực hành</a></li>
+          <li><a href="${BASE}phong-thuc-hanh/index.html">Quản lý phòng thực hành</a></li>
         </ul>
         <h4>Số lượt truy cập</h4>
         <p class="counter"><a href="https://www.hitwebcounter.com" target="_blank" rel="noopener"><img src="https://hitwebcounter.com/counter/counter.php?page=18152559&style=0010&nbdigits=6&type=page&initCount=0" alt="Bộ đếm lượt truy cập" title="Số lượt truy cập"></a></p>
@@ -98,9 +98,9 @@ const CHEVRON = '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="tr
         <iframe src="https://maps.google.com/maps?hl=vi&q=10.044144,105.765365&z=17&output=embed" title="Bản đồ Trường Cao đẳng Y tế Cần Thơ" loading="lazy"></iframe>
       </div>
     </div>
-    <div class="footer__bottom">© ${new Date().getFullYear()} Khoa Dược - Xét nghiệm · Trường Cao đẳng Y tế Cần Thơ · <a href="#" class="edit-link" id="edit-link">✏️ Chỉnh sửa trang</a></div>
+    <div class="footer__bottom">© ${new Date().getFullYear()} Khoa Dược - Xét nghiệm · Trường Cao đẳng Y tế Cần Thơ · <a href="#" class="edit-link" id="edit-link">Chỉnh sửa trang</a></div>
   </footer>
-  <a href="#top" class="to-top" aria-label="Lên đầu trang">↑</a>`;
+  <a href="#top" class="to-top" aria-label="Lên đầu trang"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></a>`;
 })();
 
 /* ---------- Mở chế độ chỉnh sửa ---------- */
@@ -118,7 +118,7 @@ const CHEVRON = '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="tr
   try { hasToken = !!localStorage.getItem('kdxn_gh_token'); } catch (e) {}
   if (hasToken) {
     const b = document.createElement('button');
-    b.className = 'edit-fab'; b.title = 'Chỉnh sửa trang này'; b.textContent = '✏️ Sửa trang';
+    b.className = 'edit-fab'; b.title = 'Chỉnh sửa trang này'; b.textContent = 'Sửa trang';
     document.body.appendChild(b);
   }
   if (/[?&]edit\b/.test(location.search)) openEditor();
