@@ -455,3 +455,5 @@ a{color:var(--blue);text-decoration:none}
 .edit-link:hover{color:var(--gold)!important}
 .edit-fab{position:fixed;left:18px;bottom:18px;z-index:90;background:var(--gold);color:var(--blue-dark);border:0;border-radius:999px;padding:10px 16px;font:700 14px "Be Vietnam Pro",Arial,sans-serif;box-shadow:var(--shadow);cursor:pointer}
 body.ed-on .edit-fab{display:none}
+.topbar__login{background:var(--gold);color:var(--blue-dark)!important;font-weight:700;padding:2px 12px;border-radius:999px}
+.topbar__login:hover{background:#ffd447}

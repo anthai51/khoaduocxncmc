@@ -1,0 +1,73 @@
+rules_version = '2';
+// Quy tắc bảo mật cho trang Quản lý phòng thực hành (dán vào Firebase Console → Firestore → Rules)
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function userDoc() { return /databases/$(database)/documents/users/$(request.auth.uid); }
+    function active() { return signedIn() && exists(userDoc()) && get(userDoc()).data.disabled != true; }
+    function isAdmin() { return active() && get(userDoc()).data.role == 'admin'; }
+    function managesLab(labId) {
+      return active() && exists(/databases/$(database)/documents/labs/$(labId))
+        && get(/databases/$(database)/documents/labs/$(labId)).data.managerId == request.auth.uid;
+    }
+    function noAdminYet() { return !exists(/databases/$(database)/documents/meta/admin); }
+
+    // Đánh dấu đã có quản trị viên đầu tiên
+    match /meta/admin {
+      allow read: if true;
+      allow create: if signedIn() && noAdminYet()
+        && getAfter(userDoc()).data.role == 'admin';
+      allow update, delete: if false;
+    }
+
+    // Tài khoản người dùng
+    match /users/{uid} {
+      allow read: if active();
+      allow create: if isAdmin()
+        || (signedIn() && request.auth.uid == uid && noAdminYet() && request.resource.data.role == 'admin');
+      allow update: if isAdmin()
+        || (active() && request.auth.uid == uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name']));
+      allow delete: if isAdmin();
+    }
+
+    // Phòng thực hành
+    match /labs/{labId} {
+      allow read: if active();
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin()
+        || (managesLab(labId) && request.resource.data.managerId == resource.data.managerId)
+        || (active() && resource.data.managerId == null
+            && request.resource.data.managerId == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['managerId']));
+    }
+
+    // Thiết bị, vật tư, hóa chất…
+    match /items/{id} {
+      allow read: if active();
+      allow create: if isAdmin() || managesLab(request.resource.data.labId);
+      allow update: if isAdmin() || (managesLab(resource.data.labId) && request.resource.data.labId == resource.data.labId);
+      allow delete: if isAdmin() || managesLab(resource.data.labId);
+    }
+
+    // Mượn / trả
+    match /loans/{id} {
+      allow read: if active();
+      allow create: if isAdmin() || managesLab(request.resource.data.labId);
+      allow update: if isAdmin() || (managesLab(resource.data.labId) && request.resource.data.labId == resource.data.labId);
+      allow delete: if isAdmin() || managesLab(resource.data.labId);
+    }
+
+    // Nhật ký theo phòng
+    match /logs/{labId} {
+      allow read: if active();
+      allow write: if isAdmin() || managesLab(labId);
+    }
+
+    // Thông tin liên hệ của người dùng
+    match /contacts/{uid} {
+      allow read: if active();
+      allow write: if (active() && request.auth.uid == uid) || isAdmin();
+    }
+  }
+}

@@ -50,6 +50,7 @@ const CHEVRON = '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="tr
       <span>📞 (84-0292) 3 899 017</span>
       <span>✉️ khoaduoccdytct@gmail.com</span>
       <a href="http://cmc.edu.vn" target="_blank" rel="noopener">🌐 cmc.edu.vn</a>
+      <a href="${BASE}phong-thuc-hanh/index.html" class="topbar__login">🔐 Quản lý phòng thực hành</a>
     </div>
   </div>
   <header class="header" id="top">
@@ -88,6 +89,7 @@ const CHEVRON = '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="tr
         <h4>Liên kết nhanh</h4>
         <ul class="footer__links">
           ${MENU.filter(m => m.href !== 'index.html').map(m => `<li><a href="${BASE}${m.href}">${m.title}</a></li>`).join('')}
+          <li><a href="${BASE}phong-thuc-hanh/index.html">🔐 Quản lý phòng thực hành</a></li>
         </ul>
         <h4>Số lượt truy cập</h4>
         <p class="counter"><a href="https://www.hitwebcounter.com" target="_blank" rel="noopener"><img src="https://hitwebcounter.com/counter/counter.php?page=18152559&style=0010&nbdigits=6&type=page&initCount=0" alt="Bộ đếm lượt truy cập" title="Số lượt truy cập"></a></p>

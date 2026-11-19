@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Quản lý phòng Thực hành - Khoa Dược - Xét nghiệm</title>
+  <link rel="icon" href="../assets/img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="app.css?v=1">
+</head>
+<body>
+  <div id="auth" class="auth" hidden></div>
+  <div class="app" id="app" hidden>
+    <aside class="side" id="side"></aside>
+    <main class="main" id="main"><div class="loading">Đang tải dữ liệu…</div></main>
+  </div>
+  <div class="auth" id="boot"><div class="loading">Đang kết nối…</div></div>
+  <div class="scrim" id="modal" hidden></div>
+  <div class="toast" id="toast" hidden role="status"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js" defer></script>
+  <script src="firebase-config.js?v=1"></script>
+  <script src="app.js?v=2"></script>
+</body>
+</html>
