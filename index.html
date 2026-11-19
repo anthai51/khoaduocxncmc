@@ -3,10 +3,256 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Khoa Dược</title>
+  <title>Khoa Dược - Xét nghiệm | Trường Cao đẳng Y tế Cần Thơ</title>
+  <meta name="description" content="Khoa Dược - Xét nghiệm, Trường Cao đẳng Y tế Cần Thơ: giới thiệu, cơ cấu tổ chức, chương trình đào tạo ngành Dược và ngành Xét nghiệm.">
+  <link rel="icon" href="assets/img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-  <h1>Chào mừng đến với website Khoa Dược</h1>
-  <p>Trang đang được xây dựng.</p>
+
+  <!-- ===== THANH TRÊN CÙNG ===== -->
+  <div class="topbar">
+    <div class="container topbar__inner">
+      <span>📞 (84-0292) 3 899 017</span>
+      <span>✉️ khoaduoccdytct@gmail.com</span>
+      <a href="http://cmc.edu.vn" target="_blank" rel="noopener">🌐 cmc.edu.vn</a>
+    </div>
+  </div>
+
+  <!-- ===== ĐẦU TRANG + MENU ===== -->
+  <header class="header" id="top">
+    <div class="container header__inner">
+      <a href="#top" class="brand">
+        <img src="assets/img/logo.png" alt="Logo Trường Cao đẳng Y tế Cần Thơ">
+        <span class="brand__text">
+          <small>Trường Cao đẳng Y tế Cần Thơ</small>
+          <strong>Khoa Dược - Xét nghiệm</strong>
+        </span>
+      </a>
+      <button class="nav-toggle" aria-label="Mở menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav" aria-label="Menu chính">
+        <a href="#top">Trang chủ</a>
+        <a href="#gioi-thieu">Giới thiệu</a>
+        <a href="#co-cau">Cơ cấu tổ chức</a>
+        <a href="#dao-tao">Đào tạo</a>
+        <a href="#tin-tuc">Tin tức</a>
+        <a href="#gop-y">Góp ý</a>
+        <a href="#lien-he" class="nav__cta">Liên hệ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ===== BANNER ===== -->
+    <section class="hero">
+      <div class="hero__overlay"></div>
+      <div class="container hero__content">
+        <p class="hero__eyebrow">Trường Cao đẳng Y tế Cần Thơ</p>
+        <h1>Khoa Dược - Xét nghiệm</h1>
+        <p class="hero__lead">[Khẩu hiệu / câu giới thiệu ngắn của Khoa]</p>
+        <div class="hero__actions">
+          <a href="#dao-tao" class="btn btn--gold">Ngành đào tạo</a>
+          <a href="#gioi-thieu" class="btn btn--ghost">Tìm hiểu thêm</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 1. GIỚI THIỆU ===== -->
+    <section class="section" id="gioi-thieu">
+      <div class="container">
+        <div class="section__head">
+          <span class="section__tag">01</span>
+          <h2>Giới thiệu</h2>
+          <p>[Mô tả ngắn về Khoa]</p>
+        </div>
+
+        <div class="grid grid--2 align-center">
+          <div class="stack">
+            <article class="sub">
+              <h3>Tổng quan về Khoa</h3>
+              <p class="placeholder">Nội dung đang cập nhật…</p>
+            </article>
+            <article class="sub">
+              <h3>Sứ mệnh</h3>
+              <p class="placeholder">Nội dung đang cập nhật…</p>
+            </article>
+            <article class="sub">
+              <h3>Tầm nhìn</h3>
+              <p class="placeholder">Nội dung đang cập nhật…</p>
+            </article>
+          </div>
+          <div class="video">
+            <h3 class="video__title">Video giới thiệu</h3>
+            <div class="video__frame">
+              <iframe src="https://www.youtube.com/embed/vO9dtStOEng" title="Video giới thiệu Khoa Dược - Xét nghiệm" loading="lazy" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 2. CƠ CẤU TỔ CHỨC ===== -->
+    <section class="section section--alt" id="co-cau">
+      <div class="container">
+        <div class="section__head">
+          <span class="section__tag">02</span>
+          <h2>Cơ cấu tổ chức</h2>
+          <p>[Mô tả ngắn về đội ngũ]</p>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><strong>20</strong><span>Thành viên</span></div>
+          <div class="stat"><strong>15</strong><span>Giảng viên sau đại học</span></div>
+          <div class="stat"><strong>4</strong><span>Bộ môn trực thuộc</span></div>
+        </div>
+
+        <h3 class="block-title">Ban chủ nhiệm Khoa</h3>
+        <div class="grid grid--3">
+          <div class="person"><div class="person__avatar"></div><h4>[Họ và tên]</h4><p>Trưởng khoa</p></div>
+          <div class="person"><div class="person__avatar"></div><h4>[Họ và tên]</h4><p>Phó trưởng khoa</p></div>
+          <div class="person"><div class="person__avatar"></div><h4>[Họ và tên]</h4><p>Phó trưởng khoa</p></div>
+        </div>
+
+        <h3 class="block-title">Các bộ môn</h3>
+        <div class="grid grid--4">
+          <article class="card">
+            <div class="card__icon">💊</div>
+            <h4>Bộ môn Dược lý - Dược lâm sàng</h4>
+            <ul class="card__list"><li>Trưởng bộ môn: […]</li><li>Học phần phụ trách: […]</li></ul>
+          </article>
+          <article class="card">
+            <div class="card__icon">🌿</div>
+            <h4>Bộ môn Dược liệu - Kiểm nghiệm</h4>
+            <ul class="card__list"><li>Trưởng bộ môn: […]</li><li>Học phần phụ trách: […]</li></ul>
+          </article>
+          <article class="card">
+            <div class="card__icon">⚗️</div>
+            <h4>Bộ môn Bào chế - Quản lý dược</h4>
+            <ul class="card__list"><li>Trưởng bộ môn: […]</li><li>Học phần phụ trách: […]</li></ul>
+          </article>
+          <article class="card">
+            <div class="card__icon">🔬</div>
+            <h4>Bộ môn Xét nghiệm</h4>
+            <ul class="card__list"><li>Trưởng bộ môn: […]</li><li>Học phần phụ trách: […]</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 3. ĐÀO TẠO / TẠI SAO CHỌN NGÀNH ===== -->
+    <section class="section" id="dao-tao">
+      <div class="container">
+        <div class="section__head">
+          <span class="section__tag">03</span>
+          <h2>Tại sao chọn ngành Dược - Xét nghiệm?</h2>
+          <p>[Câu dẫn ngắn]</p>
+        </div>
+
+        <div class="grid grid--2">
+          <article class="major">
+            <img src="assets/img/duoc.jpg" alt="Ngành Dược" loading="lazy">
+            <div class="major__body">
+              <h3>Ngành Dược</h3>
+              <h4>Kiến thức &amp; kỹ năng đào tạo</h4>
+              <p class="placeholder">Nội dung đang cập nhật…</p>
+              <h4>Cơ hội nghề nghiệp</h4>
+              <p class="placeholder">Nội dung đang cập nhật…</p>
+              <h4>Thông tin tuyển sinh</h4>
+              <p class="placeholder">Nội dung đang cập nhật…</p>
+            </div>
+          </article>
+          <article class="major">
+            <img src="assets/img/xet-nghiem.jpg" alt="Ngành Xét nghiệm" loading="lazy">
+            <div class="major__body">
+              <h3>Ngành Xét nghiệm</h3>
+              <h4>Kiến thức &amp; kỹ năng đào tạo</h4>
+              <p class="placeholder">Nội dung đang cập nhật…</p>
+              <h4>Cơ hội nghề nghiệp</h4>
+              <p class="placeholder">Nội dung đang cập nhật…</p>
+              <h4>Thông tin tuyển sinh</h4>
+              <p class="placeholder">Nội dung đang cập nhật…</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 4. TIN TỨC - HOẠT ĐỘNG ===== -->
+    <section class="section section--alt" id="tin-tuc">
+      <div class="container">
+        <div class="section__head">
+          <span class="section__tag">04</span>
+          <h2>Tin tức - Hoạt động</h2>
+          <p>[Các hoạt động mới của Khoa]</p>
+        </div>
+        <div class="grid grid--3">
+          <article class="news"><div class="news__thumb"></div><div class="news__body"><time>dd/mm/yyyy</time><h4>[Tiêu đề bài viết]</h4><p class="placeholder">Tóm tắt ngắn…</p></div></article>
+          <article class="news"><div class="news__thumb"></div><div class="news__body"><time>dd/mm/yyyy</time><h4>[Tiêu đề bài viết]</h4><p class="placeholder">Tóm tắt ngắn…</p></div></article>
+          <article class="news"><div class="news__thumb"></div><div class="news__body"><time>dd/mm/yyyy</time><h4>[Tiêu đề bài viết]</h4><p class="placeholder">Tóm tắt ngắn…</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 5. HỘP THƯ GÓP Ý ===== -->
+    <section class="section" id="gop-y">
+      <div class="container">
+        <div class="feedback">
+          <div>
+            <span class="section__tag">05</span>
+            <h2>Hộp thư góp ý</h2>
+            <p>Quét mã QR để điền thông tin vào Google Form.</p>
+            <!-- Thay dấu # bằng đường liên kết Google Form của Khoa -->
+            <a href="#" class="btn btn--blue" target="_blank" rel="noopener">Mở biểu mẫu góp ý</a>
+          </div>
+          <img src="assets/img/qr.png" alt="Mã QR hộp thư góp ý" class="feedback__qr">
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== CHÂN TRANG / LIÊN HỆ ===== -->
+  <footer class="footer" id="lien-he">
+    <div class="container footer__grid">
+      <div>
+        <div class="brand brand--light">
+          <img src="assets/img/logo.png" alt="">
+          <span class="brand__text"><small>Trường Cao đẳng Y tế Cần Thơ</small><strong>Khoa Dược - Xét nghiệm</strong></span>
+        </div>
+        <ul class="footer__info">
+          <li><b>Địa chỉ:</b> Văn phòng Khoa Dược - Xét nghiệm tầng 5, số 340 Nguyễn Văn Cừ, P. An Hòa, Q. Ninh Kiều, TP. Cần Thơ</li>
+          <li><b>Điện thoại:</b> (84-0292) 3 899 017</li>
+          <li><b>Email:</b> <a href="mailto:khoaduoccdytct@gmail.com">khoaduoccdytct@gmail.com</a></li>
+          <li><b>Website:</b> <a href="http://cmc.edu.vn" target="_blank" rel="noopener">cmc.edu.vn</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Liên kết nhanh</h4>
+        <ul class="footer__links">
+          <li><a href="#gioi-thieu">Giới thiệu</a></li>
+          <li><a href="#co-cau">Cơ cấu tổ chức</a></li>
+          <li><a href="#dao-tao">Đào tạo</a></li>
+          <li><a href="#tin-tuc">Tin tức</a></li>
+          <li><a href="#gop-y">Hộp thư góp ý</a></li>
+        </ul>
+        <h4>Số lượt truy cập</h4>
+        <p class="counter"><span id="visit-count">—</span> lượt</p>
+      </div>
+      <div class="footer__map">
+        <iframe src="https://maps.google.com/maps?hl=vi&q=10.044144,105.765365&z=17&output=embed" title="Bản đồ Trường Cao đẳng Y tế Cần Thơ" loading="lazy"></iframe>
+      </div>
+    </div>
+    <div class="footer__bottom">© <span id="year"></span> Khoa Dược - Xét nghiệm · Trường Cao đẳng Y tế Cần Thơ</div>
+  </footer>
+
+  <a href="#top" class="to-top" aria-label="Lên đầu trang">↑</a>
+
+  <script src="assets/js/main.js"></script>
 </body>
 </html>
