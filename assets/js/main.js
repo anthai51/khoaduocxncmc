@@ -48,7 +48,11 @@ if (document.fonts) document.fonts.ready.then(fitMenu);
 
 // Nút lên đầu trang
 const toTop = document.querySelector('.to-top');
-const onScroll = () => toTop && toTop.classList.toggle('show', window.scrollY > 500);
+const headerEl = document.querySelector('.header');
+const onScroll = () => {
+  if (toTop) toTop.classList.toggle('show', window.scrollY > 500);
+  if (headerEl) headerEl.classList.toggle('is-scrolled', window.scrollY > 8);
+};
 window.addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 
@@ -100,3 +104,20 @@ document.addEventListener('click', e => {
   lb.classList.add('open');
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('open'); });
+
+// Số liệu đầu trang đếm lên một lần khi tải
+(function () {
+  const nums = document.querySelectorAll('[data-count]');
+  if (!nums.length || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const ease = t => 1 - Math.pow(1 - t, 3);
+  nums.forEach(el => { el.textContent = '0'; });
+  setTimeout(() => {
+    const start = performance.now(), dur = 1100;
+    const tick = now => {
+      const t = Math.min(1, (now - start) / dur);
+      nums.forEach(el => { el.textContent = Math.round(ease(t) * +el.dataset.count); });
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, 400);
+})();
