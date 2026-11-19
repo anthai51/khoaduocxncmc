@@ -190,3 +190,11 @@ td .act{display:flex;gap:6px;justify-content:flex-end;flex-wrap:nowrap}
   .log div{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* Quyết định phân công */
+.qdline{margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 12px;border-radius:10px;background:#eef6ff;border:1px solid #cfe3fb;font-size:14px;color:#1d3557}
+.qdline.empty{background:#fff8e6;border-color:#f3dc9c;color:#6b5200}
+.qdline .qdic{font-size:16px}
+.qdfld .qdrow{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:14px}
+.qdfld .qdrow input{width:auto;min-width:0;padding:7px 8px;text-align:center}
+.qdfld .qd-no{width:90px!important}.qdfld .qd-2{width:52px!important}.qdfld .qd-4{width:72px!important}
+.qdfld .qdsep{margin-left:6px}

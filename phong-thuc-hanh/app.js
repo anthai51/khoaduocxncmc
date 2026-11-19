@@ -197,6 +197,40 @@ function overviewHtml(){
     : `<div class="empty">Chưa có phòng nào. ${canCreateLab() ? 'Bấm “Thêm phòng” để tạo phòng đầu tiên.' : 'Quản trị viên cần tạo phòng trước.'}</div>`}`;
 }
 
+/* ---------- quyết định phân công phụ trách ---------- */
+const QD_SUFFIX = '/QĐ-CĐYTCT';
+const qdNum = no => String(no || '').replace(/\s*\/\s*QĐ-CĐYTCT\s*$/i, '').trim();
+function qdText(lab){
+  const n = qdNum(lab.decisionNo), d = lab.decisionDate ? lab.decisionDate.split('-') : null;
+  return `Quyết định số <b>${n ? esc(n) : '…'}</b>${esc(QD_SUFFIX)} ngày <b>${d ? d[2] : '…'}</b> tháng <b>${d ? d[1] : '…'}</b> năm <b>${d ? d[0] : '……'}</b>`;
+}
+function qdLineHtml(lab, can){
+  const has = lab.decisionNo || lab.decisionDate;
+  return `<div class="qdline${has ? '' : ' empty'}"><span class="qdic">📄</span><span>${qdText(lab)} <span class="hint">về việc phân công phụ trách phòng</span></span>
+    ${!has ? (can ? `<button class="btn sm primary" data-act="editlab" data-id="${esc(lab.id)}">Điền thông tin quyết định</button>` : `<span class="hint">(chưa cập nhật)</span>`)
+      : (can ? `<button class="btn sm" data-act="editlab" data-id="${esc(lab.id)}">Sửa</button>` : '')}</div>`;
+}
+function qdFieldHtml(lab){
+  const d = lab?.decisionDate ? lab.decisionDate.split('-') : ['','',''];
+  return `<div class="fld wide qdfld"><span>Quyết định phân công phụ trách phòng</span>
+    <div class="qdrow">Số <input id="l_decno" class="qd-no" value="${esc(qdNum(lab?.decisionNo))}" placeholder="…" autocomplete="off"><b>${esc(QD_SUFFIX)}</b>
+      <span class="qdsep">ngày</span><input id="l_dd" class="qd-2" inputmode="numeric" maxlength="2" value="${esc(d[2])}" placeholder="dd">
+      <span class="qdsep">tháng</span><input id="l_mm" class="qd-2" inputmode="numeric" maxlength="2" value="${esc(d[1])}" placeholder="mm">
+      <span class="qdsep">năm</span><input id="l_yy" class="qd-4" inputmode="numeric" maxlength="4" value="${esc(d[0])}" placeholder="yyyy"></div></div>`;
+}
+function readQD(){
+  const n = qdNum($('#l_decno').value);
+  const dd = $('#l_dd').value.trim(), mm = $('#l_mm').value.trim(), yy = $('#l_yy').value.trim();
+  let date = null;
+  if(dd || mm || yy){
+    const D = +dd, M = +mm, Y = +yy, t = new Date(Y, M - 1, D);
+    if(!/^\d{1,2}$/.test(dd) || !/^\d{1,2}$/.test(mm) || !/^\d{4}$/.test(yy) || t.getFullYear() !== Y || t.getMonth() !== M - 1 || t.getDate() !== D)
+      return {error:'Ngày tháng năm của quyết định không hợp lệ.'};
+    date = `${Y}-${String(M).padStart(2,'0')}-${String(D).padStart(2,'0')}`;
+  }
+  return {no: n ? n + QD_SUFFIX : '', date};
+}
+
 /* ---------- rendering: lab view ---------- */
 function labHeadHtml(lab){
   const can = canEditLab(lab), st = labAlertStats(lab.id);
@@ -207,9 +241,9 @@ function labHeadHtml(lab){
       <div class="sub">${lab.code ? `<span class="code">${esc(lab.code)}</span>` : ''}${lab.dept ? `<span class="pill">${esc(DEPTS[lab.dept]||lab.dept)}</span>` : ''}${lab.location ? `<span>${esc(lab.location)}</span>` : ''}
         ${managerLabel(lab) ?`<span class="mgr">${managerAvatarHtml(lab)}Phụ trách: <b>${esc(managerLabel(lab))}</b>${isMgr(lab) ? ' (bạn)' : ''}${!lab.managerId ? ' <span class="hint">(chưa có tài khoản)</span>' : ''}</span>` : `<span class="pill">Chưa có người phụ trách</span>`}
         ${ct && (ct.phone || ct.email) ? `<span class="hint">${[ct.phone, ct.email].filter(Boolean).map(esc).join(' · ')}</span>` : ''}
-        ${lab.decisionNo || lab.decisionDate ? `<span class="hint">Theo QĐ${lab.decisionNo ? ' số ' + esc(lab.decisionNo) : ''}${lab.decisionDate ? ' ngày ' + fmtDate(lab.decisionDate) : ''}</span>` : ''}
         ${can ? `<span class="pill role">${isMgr(lab) ? 'Bạn quản lý phòng này' : 'Quyền quản trị'}</span>` : `<span class="pill">Chỉ xem</span>`}
-        ${st.s2 ? `<span class="pill s2">${st.s2} khẩn</span>` : ''}${st.s1 ? `<span class="pill s1">${st.s1} chú ý</span>` : ''}</div></div>
+        ${st.s2 ? `<span class="pill s2">${st.s2} khẩn</span>` : ''}${st.s1 ? `<span class="pill s1">${st.s1} chú ý</span>` : ''}</div>
+      ${qdLineHtml(lab, can)}</div>
       <div class="actions">
         ${claim ? `<button class="btn primary" data-act="claim" data-id="${esc(lab.id)}">Nhận phụ trách phòng này</button>` : ''}
         ${S.me.isAdmin ? `<button class="btn" data-act="assign" data-id="${esc(lab.id)}">Đổi người phụ trách</button>` : ''}
@@ -431,8 +465,7 @@ function labForm(lab){
     <div class="grid2">${fld('l_name','Tên phòng',lab?.name,'required')}${fld('l_code','Mã phòng / ghi chú',lab?.code,'placeholder="VD: P.HH-101"')}
     <label class="fld"><span>Bộ môn</span><select id="l_dept"><option value="">— Chưa phân bộ môn —</option>${Object.entries(DEPTS).map(([k,l]) => `<option value="${k}" ${lab?.dept===k?'selected':''}>${l}</option>`).join('')}</select></label>
     ${fld('l_loc','Vị trí',lab?.location,'placeholder="VD: Nhà A2, tầng 1"')}
-    ${fld('l_decno','Số quyết định phân công phụ trách',lab?.decisionNo,'placeholder="VD: 123/QĐ-CĐYTCT"')}
-    ${dfld('l_decdate','Ngày quyết định',lab?.decisionDate)}</div>
+    ${qdFieldHtml(lab)}</div>
     <div class="foot">${lab && S.me.isAdmin ? `<button class="btn danger" type="button" data-act="dellab" data-id="${esc(lab.id)}" style="margin-right:auto">Xóa phòng</button>` : ''}
     <button class="btn" type="button" data-act="close">Hủy</button><button class="btn primary" type="submit">Lưu</button></div></form>`);
 }
@@ -744,10 +777,9 @@ document.addEventListener('submit', async e => {
   e.preventDefault();
   if(f.id === 'fLab'){
     const name = $('#l_name').value.trim(); if(!name) return;
-    const decisionDate = toISO($('#l_decdate').value);
-    if(decisionDate === 'invalid') return toast('Ngày quyết định không hợp lệ, vui lòng nhập theo định dạng dd/mm/yyyy.');
+    const qd = readQD(); if(qd.error) return toast(qd.error);
     const vals = {name, code:$('#l_code').value.trim(), location:$('#l_loc').value.trim(), dept:$('#l_dept').value || null,
-      decisionNo:$('#l_decno').value.trim(), decisionDate};
+      decisionNo:qd.no, decisionDate:qd.date};
     if(f.dataset.id){ const l = S.labs.find(x => x.id === f.dataset.id); if(!l || !guard(l)) return; closeModal(); enqueue(() => db.doc('labs/' + l.id).update(vals)); }
     else { if(!canCreateLab()) return; closeModal();
       const ref = db.collection('labs').doc(); enqueue(() => ref.set(Object.assign(vals, {managerId: null, managerName: null, order: (S.labs.length + 1) * 10, createdAt: Date.now()}))).then(() => go(ref.id)); }
