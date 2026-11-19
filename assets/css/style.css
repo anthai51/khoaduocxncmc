@@ -449,3 +449,9 @@ a{color:var(--blue);text-decoration:none}
 .org__dname{min-height:58px;display:flex;align-items:center;justify-content:center}
 .org__mid{align-items:stretch}
 .org__mid .org__box{justify-content:center;min-width:200px}
+
+/* Nút chỉnh sửa */
+.edit-link{color:#8ea3bd!important;text-decoration:underline;text-underline-offset:3px}
+.edit-link:hover{color:var(--gold)!important}
+.edit-fab{position:fixed;left:18px;bottom:18px;z-index:90;background:var(--gold);color:var(--blue-dark);border:0;border-radius:999px;padding:10px 16px;font:700 14px "Be Vietnam Pro",Arial,sans-serif;box-shadow:var(--shadow);cursor:pointer}
+body.ed-on .edit-fab{display:none}

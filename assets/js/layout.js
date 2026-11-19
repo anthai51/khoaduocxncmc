@@ -96,7 +96,28 @@ const CHEVRON = '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="tr
         <iframe src="https://maps.google.com/maps?hl=vi&q=10.044144,105.765365&z=17&output=embed" title="Bản đồ Trường Cao đẳng Y tế Cần Thơ" loading="lazy"></iframe>
       </div>
     </div>
-    <div class="footer__bottom">© ${new Date().getFullYear()} Khoa Dược - Xét nghiệm · Trường Cao đẳng Y tế Cần Thơ</div>
+    <div class="footer__bottom">© ${new Date().getFullYear()} Khoa Dược - Xét nghiệm · Trường Cao đẳng Y tế Cần Thơ · <a href="#" class="edit-link" id="edit-link">✏️ Chỉnh sửa trang</a></div>
   </footer>
   <a href="#top" class="to-top" aria-label="Lên đầu trang">↑</a>`;
+})();
+
+/* ---------- Mở chế độ chỉnh sửa ---------- */
+(function () {
+  const BASE = document.body.dataset.base || '';
+  function openEditor(e) {
+    if (e) e.preventDefault();
+    if (window.KDXNEditor) return window.KDXNEditor.start();
+    const s = document.createElement('script');
+    s.src = BASE + 'assets/js/editor.js?v=' + Date.now();
+    document.body.appendChild(s);
+  }
+  document.addEventListener('click', e => { if (e.target.closest('#edit-link, .edit-fab')) openEditor(e); });
+  let hasToken = false;
+  try { hasToken = !!localStorage.getItem('kdxn_gh_token'); } catch (e) {}
+  if (hasToken) {
+    const b = document.createElement('button');
+    b.className = 'edit-fab'; b.title = 'Chỉnh sửa trang này'; b.textContent = '✏️ Sửa trang';
+    document.body.appendChild(b);
+  }
+  if (/[?&]edit\b/.test(location.search)) openEditor();
 })();
