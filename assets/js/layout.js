@@ -48,7 +48,7 @@ const CHEVRON = '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="tr
   <div class="topbar">
     <div class="container topbar__inner">
       <a href="${BASE}phong-thuc-hanh/index.html" class="topbar__login"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Quản lý phòng thực hành</a>
-      <a href="${BASE}tien-do/index.html" class="topbar__login"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 9h4M8 13h7M8 17h3"/><path d="m15 8 1.5 1.5L19 7"/></svg>Bảng theo dõi tiến độ công việc</a>
+      <a href="${BASE}tien-do/index.html" class="topbar__login"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 9h4M8 13h7M8 17h3"/><path d="m15 8 1.5 1.5L19 7"/></svg>Theo dõi tiến độ CV</a>
       <a href="https://sites.google.com/view/sodotruongcdytct" class="topbar__login" target="_blank" rel="noopener"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15M9 3.236v15"/></svg>Sơ đồ trường</a>
     </div>
   </div>
