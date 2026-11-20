@@ -1,0 +1,38 @@
+/* Trang Tài khoản & Hồ sơ */
+.tk{padding:40px 0 80px;display:flex;flex-direction:column;gap:20px}
+.tk-card{background:#fff;border:1px solid var(--line-2,#dfe4ea);border-radius:12px;padding:20px 24px;display:flex;flex-direction:column;gap:12px}
+.tk-card h2{font-size:18px;line-height:26px;font-weight:600;margin:0;color:var(--ink,#111827)}
+.tk-login,.tk-narrow{max-width:440px;width:100%;margin:0 auto}
+.tk-login label,.tk-narrow label,.tk-grid label{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500;color:var(--ink-2,#4b5565)}
+.tk-in{height:44px;padding:0 12px;border:1px solid #cfd6df;border-radius:8px;font:inherit;font-size:15px;color:var(--ink,#111827);background:#fff}
+.tk-in:focus{outline:2px solid var(--blue,#0b4f9c);outline-offset:1px;border-color:transparent}
+.tk-muted{color:var(--muted,#6b7487);margin:0}
+.tk-small{font-size:13px}
+.tk-err{color:#b42318;font-size:14px;min-height:20px;margin:0}
+.tk-ok{color:#1f7a4d;font-size:14px;min-height:20px;margin:0}
+.tk-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+.tk-name{font-size:28px;line-height:34px;font-weight:600;margin:2px 0;color:var(--ink,#111827)}
+.tk-actions{display:flex;flex-wrap:wrap;gap:8px}
+.tk-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line-2,#dfe4ea);overflow-x:auto}
+.tk-tab{border:0;background:none;padding:12px 16px;font:inherit;font-weight:500;color:var(--ink-2,#4b5565);border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;white-space:nowrap}
+.tk-tab[aria-selected="true"]{color:var(--blue,#0b4f9c);border-bottom-color:var(--blue,#0b4f9c)}
+.tk-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.tk-dl{margin:0;display:flex;flex-direction:column}
+.tk-dl > div{display:grid;grid-template-columns:44% 1fr;gap:12px;padding:10px 0;border-top:1px solid #eef1f5}
+.tk-dl > div:first-child{border-top:0}
+.tk-dl dt{color:var(--muted,#6b7487);font-size:14px}
+.tk-dl dd{margin:0;font-weight:500;overflow-wrap:anywhere}
+.tk-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.tk-search{width:min(320px,100%)}
+.tk-table-wrap{overflow-x:auto}
+.tk-table{width:100%;border-collapse:collapse;font-size:14px;min-width:900px}
+.tk-table th{text-align:left;font-weight:600;color:var(--ink-2,#4b5565);padding:10px 12px;background:#f3f6fa;white-space:nowrap}
+.tk-table td{padding:10px 12px;border-top:1px solid #eef1f5;vertical-align:middle}
+.tk-table tr:hover td{background:#fafbfd}
+.tk-mono{font-family:var(--mono,ui-monospace,monospace);font-size:13px}
+.tk-sm{height:34px!important;padding:0 12px!important;font-size:13px!important;white-space:nowrap}
+.tk-tag{font-size:12px;color:#b42318;border:1px solid #f1b8b3;border-radius:99px;padding:0 8px;margin-left:6px}
+.tk-modal{position:fixed;inset:0;background:rgba(15,27,45,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:200}
+.tk-sheet{width:min(820px,100%);max-height:calc(100vh - 32px);overflow:auto}
+.tk-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px}
+@media (max-width:640px){.tk-grid{grid-template-columns:1fr}.tk-dl > div{grid-template-columns:1fr;gap:2px}.tk-cards{grid-template-columns:1fr}.tk-name{font-size:24px}}

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Tài khoản | Khoa Dược - Xét nghiệm</title>
+  <link rel="icon" href="assets/img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css?v=20261120f">
+  <link rel="stylesheet" href="assets/css/tai-khoan.css?v=1">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div class="breadcrumb"><a href="index.html">Trang chủ</a><span class="crumb-sep">›</span><span class="crumb-cur">Tài khoản</span></div>
+        <h1 id="pageTitle">Đăng nhập</h1>
+      </div>
+    </section>
+    <div class="container tk">
+      <div id="tkBoot" class="tk-muted">Đang kiểm tra đăng nhập…</div>
+
+      <!-- Đăng nhập -->
+      <form id="tkLogin" class="tk-card tk-login" hidden autocomplete="on">
+        <h2>Đăng nhập tài khoản Khoa</h2>
+        <p class="tk-muted">Một tài khoản dùng chung cho Hồ sơ cá nhân, Quản lý phòng thực hành và Theo dõi tiến độ CV.</p>
+        <label>Tên đăng nhập<input id="lgUser" class="tk-in" autocomplete="username" required placeholder="VD: số điện thoại của bạn"></label>
+        <label>Mật khẩu<input id="lgPass" class="tk-in" type="password" autocomplete="current-password" required></label>
+        <p id="lgErr" class="tk-err" role="alert"></p>
+        <button class="btn btn--primary" id="lgBtn" type="submit">Đăng nhập</button>
+        <p class="tk-muted tk-small">Quên mật khẩu? Liên hệ quản trị viên của Khoa để được đặt lại.</p>
+      </form>
+
+      <!-- Đã đăng nhập -->
+      <div id="tkApp" hidden>
+        <div class="tk-top">
+          <div>
+            <p class="tk-muted">Xin chào</p>
+            <p class="tk-name" id="meName"></p>
+            <p class="tk-muted" id="meRole"></p>
+          </div>
+          <div class="tk-actions">
+            <a class="btn btn--quiet" href="phong-thuc-hanh/index.html">Quản lý phòng thực hành</a>
+            <a class="btn btn--quiet" href="tien-do/index.html">Theo dõi tiến độ CV</a>
+            <button class="btn btn--quiet" id="logoutBtn" type="button">Đăng xuất</button>
+          </div>
+        </div>
+
+        <div class="tk-tabs" role="tablist">
+          <button class="tk-tab" role="tab" data-tab="hoso" aria-selected="true">Hồ sơ của tôi</button>
+          <button class="tk-tab" role="tab" data-tab="matkhau" aria-selected="false">Đổi mật khẩu</button>
+          <button class="tk-tab" role="tab" data-tab="gv" aria-selected="false" id="tabGv" hidden>Hồ sơ giảng viên</button>
+        </div>
+
+        <section class="tk-pane" id="pane-hoso"></section>
+
+        <section class="tk-pane" id="pane-matkhau" hidden>
+          <form id="pwForm" class="tk-card tk-narrow">
+            <h2>Đổi mật khẩu</h2>
+            <label>Mật khẩu hiện tại<input id="pwOld" class="tk-in" type="password" autocomplete="current-password" required></label>
+            <label>Mật khẩu mới (ít nhất 6 ký tự)<input id="pwNew" class="tk-in" type="password" autocomplete="new-password" minlength="6" required></label>
+            <label>Nhập lại mật khẩu mới<input id="pwNew2" class="tk-in" type="password" autocomplete="new-password" minlength="6" required></label>
+            <p id="pwMsg" class="tk-err" role="status"></p>
+            <button class="btn btn--primary" type="submit">Lưu mật khẩu mới</button>
+          </form>
+        </section>
+
+        <section class="tk-pane" id="pane-gv" hidden>
+          <div class="tk-card">
+            <div class="tk-row">
+              <h2>Hồ sơ giảng viên cơ hữu</h2>
+              <input id="gvSearch" class="tk-in tk-search" type="search" placeholder="Tìm theo tên, chức vụ, SĐT…" aria-label="Tìm hồ sơ">
+            </div>
+            <p class="tk-muted tk-small">Chỉ quản trị viên thấy danh sách này. Mỗi giảng viên chỉ xem được hồ sơ của chính mình.</p>
+            <div class="tk-table-wrap"><table class="tk-table" id="gvTable"></table></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div class="tk-modal" id="tkModal" hidden>
+    <form class="tk-card tk-sheet" id="editForm">
+      <h2 id="editTitle">Sửa hồ sơ</h2>
+      <div class="tk-grid" id="editFields"></div>
+      <p id="editMsg" class="tk-err" role="status"></p>
+      <div class="tk-row"><span></span><div class="tk-actions"><button class="btn btn--quiet" type="button" id="editClose">Hủy</button><button class="btn btn--primary" type="submit">Lưu hồ sơ</button></div></div>
+    </form>
+  </div>
+
+  <div id="site-footer"></div>
+  <script src="assets/js/layout.js?v=20261120f"></script>
+  <script src="assets/js/main.js?v=20261120f"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="phong-thuc-hanh/firebase-config.js?v=2"></script>
+  <script src="assets/js/tai-khoan.js?v=1"></script>
+</body>
+</html>

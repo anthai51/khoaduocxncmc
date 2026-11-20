@@ -84,5 +84,11 @@ service cloud.firestore {
       allow read: if active();
       allow write: if isAdmin();
     }
+  
+    // Hồ sơ giảng viên: chỉ chính người đó và quản trị viên được xem
+    match /profiles/{uid} {
+      allow read: if (active() && request.auth.uid == uid) || isAdmin();
+      allow write: if isAdmin();
+    }
   }
 }

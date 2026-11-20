@@ -1056,3 +1056,4 @@ html{accent-color:var(--leaf);scrollbar-color:#b9cfbf transparent}
 .mgr-table tbody th{width:auto;white-space:nowrap}
 .mgr-table td{white-space:nowrap}
 .mgr-table td:last-child{white-space:normal}
+.topbar__acc{padding-left:16px;border-left:1px solid rgba(255,255,255,.25);text-decoration:none!important;border-radius:0}
