@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Bảng theo dõi tiến độ công việc - Khoa Dược - Xét nghiệm</title>
+<link rel="icon" href="../assets/img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Be+Vietnam+Pro:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>:root{box-sizing:border-box}body{margin:0;padding:0}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style>
+/* Layout: header with role + bell, two tabs (Bảng việc / Thống kê). Board = four columns. Stats = 12-column grid of white panels, stacking on phones. */
+:root {
+  --bg: #eceff3;
+  --surface: #ffffff;
+  --col: #e1e6ec;
+  --ink: #18212c;
+  --muted: #566272;
+  --line: #cdd5de;
+  --accent: #2457d6;
+  --on-accent: #ffffff;
+  --todo: #5f6f84;
+  --doing: #c4690f;
+  --review: #7a58c9;
+  --done: #1f8a5b;
+  --bad: #c2372f;
+  --c1: #2457d6; --c2: #c4690f; --c3: #1f8a5b; --c4: #7a58c9; --c5: #0f8aa6; --c6: #b0368a; --c7: #8a7a1f; --c8: #5f6f84;
+  --shadow: 0 1px 2px rgba(24, 33, 44, .08);
+  --font-display: "Bricolage Grotesque", "Be Vietnam Pro", system-ui, sans-serif;
+  --font-body: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11161d; --surface: #1b222c; --col: #161c24; --ink: #e8edf3; --muted: #9aa7b8;
+    --line: #2b3542; --accent: #7aa0ff; --on-accent: #0b1220;
+    --todo: #8d9db3; --doing: #e9a04f; --review: #ab92f2; --done: #4cc28d; --bad: #f0807a;
+    --c1: #7aa0ff; --c2: #e9a04f; --c3: #4cc28d; --c4: #ab92f2; --c5: #4cc4de; --c6: #e47bc0; --c7: #cdbb55; --c8: #8d9db3;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11161d; --surface: #1b222c; --col: #161c24; --ink: #e8edf3; --muted: #9aa7b8;
+  --line: #2b3542; --accent: #7aa0ff; --on-accent: #0b1220;
+  --todo: #8d9db3; --doing: #e9a04f; --review: #ab92f2; --done: #4cc28d; --bad: #f0807a;
+  --c1: #7aa0ff; --c2: #e9a04f; --c3: #4cc28d; --c4: #ab92f2; --c5: #4cc4de; --c6: #e47bc0; --c7: #cdbb55; --c8: #8d9db3;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 14px; line-height: 1.5; }
+.app { max-width: 1280px; margin: 0 auto; padding-inline: 16px; padding-block: 24px 40px; display: flex; flex-direction: column; gap: 18px; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
+.head-text { min-width: 0; }
+.date { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(26px, 4.6vw, 38px); line-height: 1.08; letter-spacing: -.02em; margin: 4px 0 0; text-wrap: balance; }
+.head-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.role { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); }
+.role.admin { border-color: var(--accent); color: var(--accent); }
+.bell { position: relative; }
+.badge { position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--bad); color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; font-variant-numeric: tabular-nums; }
+
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+.tab { border: 0; background: none; padding: 10px 14px; font-weight: 600; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -1px; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+
+.progress { display: flex; flex-direction: column; gap: 8px; max-width: 460px; }
+.progress-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.progress-top strong { font-family: var(--font-display); font-size: 20px; }
+.progress-top span { color: var(--muted); font-size: 12px; }
+.bar { display: flex; height: 10px; border-radius: 3px; overflow: hidden; background: var(--col); gap: 2px; }
+.bar i { display: block; height: 100%; background: var(--c); min-width: 0; transition: flex-grow .3s; }
+
+.hint { color: var(--muted); font-size: 13px; margin: 0; max-width: 72ch; }
+.hint b { color: var(--ink); font-weight: 600; }
+.banner { background: color-mix(in srgb, var(--bad) 12%, var(--surface)); border: 1px solid var(--bad); border-radius: 8px; padding: 10px 14px; }
+.notice { background: color-mix(in srgb, var(--doing) 12%, var(--surface)); border: 1px solid var(--doing); border-radius: 8px; padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.notice p { margin: 0; flex: 1 1 280px; min-width: 0; }
+.notice .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.add, .filters { display: flex; flex-wrap: wrap; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px; box-shadow: var(--shadow); }
+.add input[type=text], .filters input[type=search] { flex: 1 1 200px; min-width: 0; }
+.filters { box-shadow: none; background: transparent; padding: 0; border: 0; }
+.field { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; min-height: 38px; min-width: 0; max-width: 100%; }
+.field:focus { border-color: var(--accent); }
+.field:disabled { opacity: .65; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 8px 14px; min-height: 38px; font-weight: 500; }
+.btn:hover { border-color: var(--muted); }
+.btn.sm { min-height: 32px; padding: 4px 10px; font-size: 13px; }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 600; }
+.btn.danger { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 50%, var(--line)); }
+.btn.danger.armed { background: var(--bad); color: #fff; border-color: var(--bad); }
+
+.board { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; align-items: start; }
+.col { background: var(--col); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 10px; min-height: 180px; min-width: 0; border: 2px solid transparent; transition: border-color .15s; }
+.col.over { border-color: var(--c); }
+.col-head { display: flex; align-items: center; gap: 8px; padding: 2px 4px; }
+.dot { width: 10px; height: 10px; border-radius: 2px; background: var(--c); flex: none; }
+.col-head h2 { font-family: var(--font-display); font-size: 16px; font-weight: 700; margin: 0; letter-spacing: -.01em; }
+.col-head .en { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.count { margin-left: auto; font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.empty { color: var(--muted); font-size: 13px; border: 1px dashed var(--line); border-radius: 8px; padding: 18px 12px; text-align: center; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 8px; cursor: grab; min-width: 0; }
+.card.ro { cursor: default; }
+.card.dragging { opacity: .4; }
+.card-title { all: unset; cursor: pointer; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; display: block; }
+.card-title:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.done .card-title { text-decoration: line-through; text-decoration-color: var(--muted); color: var(--muted); }
+.note { color: var(--muted); font-size: 12.5px; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 500; padding: 1px 8px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; max-width: 100%; }
+.chip i { width: 7px; height: 7px; border-radius: 50%; background: var(--p); flex: none; }
+.chip.date-chip { font-family: var(--font-mono); font-size: 11px; font-variant-numeric: tabular-nums; }
+.chip.late { color: var(--bad); border-color: var(--bad); }
+.chip.stale { color: var(--doing); border-color: var(--doing); }
+.chip.sample { border-style: dashed; }
+.chip.unit { white-space: normal; border-radius: 6px; color: var(--ink); background: var(--bg); overflow-wrap: anywhere; }
+.chip.who b { width: 16px; height: 16px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-size: 9px; line-height: 16px; text-align: center; font-weight: 600; flex: none; }
+.chip.link { white-space: normal; overflow-wrap: anywhere; }
+a.chip { text-decoration: none; color: var(--accent); border-color: var(--accent); }
+.moves { margin-left: auto; display: flex; gap: 4px; }
+.moves button { border: 1px solid var(--line); background: var(--bg); border-radius: 5px; width: 28px; height: 26px; line-height: 1; padding: 0; color: var(--muted); }
+.moves button:hover { color: var(--ink); border-color: var(--muted); }
+.moves button:disabled { opacity: .3; cursor: default; }
+
+.dash { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; }
+.s12 { grid-column: span 12; } .s7 { grid-column: span 7; } .s5 { grid-column: span 5; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; box-shadow: var(--shadow); min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.panel-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.panel h2 { font-family: var(--font-display); font-size: 16px; font-weight: 700; margin: 0; letter-spacing: -.01em; }
+.panel .sub { color: var(--muted); font-size: 12px; margin: 0; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg button { border: 0; background: var(--bg); padding: 4px 10px; font-size: 12px; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.gauges { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+.gauge { text-align: center; min-width: 0; }
+.gauge svg { width: 100%; max-width: 170px; height: auto; display: block; margin: 0 auto; }
+.g-track, .g-val { fill: none; stroke-width: 9; stroke-linecap: round; }
+.g-track { stroke: var(--col); }
+.g-num { font-family: var(--font-display); font-weight: 700; font-size: 20px; fill: var(--ink); }
+.g-label { font-weight: 600; font-size: 13px; }
+.g-sub { color: var(--muted); font-size: 12px; }
+.tree { position: relative; width: 100%; aspect-ratio: 100 / 62; }
+.tile { position: absolute; padding: 2px; }
+.tile > div { height: 100%; overflow: hidden; border-radius: 4px; padding: 6px 8px; background: color-mix(in srgb, var(--tc) 20%, var(--surface)); border-left: 4px solid var(--tc); display: flex; flex-direction: column; gap: 2px; font-size: 12px; line-height: 1.25; }
+.tile b { font-weight: 600; overflow-wrap: anywhere; }
+.tile span { color: var(--muted); font-variant-numeric: tabular-nums; }
+.donut-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.donut { width: 150px; height: 150px; flex: none; }
+.donut .d-track { fill: none; stroke: var(--col); stroke-width: 5; }
+.donut circle.seg-c { fill: none; stroke-width: 5; }
+.donut text { text-anchor: middle; fill: var(--ink); }
+.legend { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; flex: 1 1 140px; min-width: 0; }
+.legend li { display: flex; align-items: center; gap: 8px; }
+.legend li span:last-child { margin-left: auto; font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+.legend-inline { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); }
+.legend-inline i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: -1px; }
+.legend-inline i.ln { height: 3px; vertical-align: 3px; }
+.chart { width: 100%; height: auto; display: block; }
+.chart text { fill: var(--muted); font-size: 10px; font-family: var(--font-body); }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.rows { display: flex; flex-direction: column; gap: 12px; }
+.rrow { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 4px 10px; align-items: center; }
+.av { width: 26px; height: 26px; border-radius: 50%; background: var(--ac); color: var(--surface); font-size: 11px; font-weight: 600; display: grid; place-items: center; }
+.rname { font-size: 13px; overflow-wrap: anywhere; min-width: 0; }
+.rval { font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; color: var(--muted); }
+.track { grid-column: 2 / 4; height: 8px; border-radius: 4px; background: var(--col); overflow: hidden; }
+.track i { display: block; height: 100%; border-radius: 4px; background: var(--fc); }
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { text-align: left; font-weight: 600; color: var(--muted); font-size: 12px; padding: 6px 10px 6px 0; }
+td { padding: 8px 10px 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.hot td { background: color-mix(in srgb, var(--doing) 10%, var(--surface)); }
+.flag { font-size: 11px; font-weight: 600; color: var(--doing); border: 1px solid var(--doing); border-radius: 99px; padding: 0 7px; margin-left: 6px; white-space: nowrap; }
+.finds { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.mut { color: var(--muted); font-size: 13px; margin: 0; }
+
+.overlay { position: fixed; inset: 0; background: rgba(8, 12, 18, .55); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 30; }
+.overlay.drawer-ov { justify-content: flex-end; align-items: stretch; padding: 0; z-index: 25; }
+.sheet { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; width: 100%; max-width: 500px; max-height: 100%; overflow: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.sheet h3 { font-family: var(--font-display); font-size: 20px; margin: 0; }
+.sheet label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.sheet .field { color: var(--ink); font-weight: 400; font-size: 14px; width: 100%; }
+.sheet textarea { min-height: 84px; resize: vertical; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; }
+.actions .right { display: flex; gap: 8px; margin-left: auto; }
+.hist { border-top: 1px solid var(--line); padding-top: 10px; display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.hist h4 { margin: 0; font-size: 12px; color: var(--ink); }
+
+.drawer { background: var(--surface); border-left: 1px solid var(--line); width: min(440px, 100%); height: 100%; overflow-y: auto; padding: 18px 16px; padding-top: calc(18px + env(safe-area-inset-top, 0px)); display: flex; flex-direction: column; gap: 16px; }
+.drawer-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.drawer h3 { font-family: var(--font-display); font-size: 20px; margin: 0; }
+.drawer h4 { margin: 0 0 8px; font-size: 13px; }
+.alist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.alist li { display: grid; grid-template-columns: 10px minmax(0, 1fr); gap: 4px 10px; align-items: start; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+.alist li.new { border-color: var(--accent); }
+.alist .ad { width: 8px; height: 8px; border-radius: 50%; margin-top: 7px; background: var(--ac, var(--muted)); }
+.alist .t { overflow-wrap: anywhere; }
+.alist .when { color: var(--muted); font-size: 12px; }
+
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 9px 16px; border-radius: 8px; font-size: 13px; max-width: calc(100% - 32px); z-index: 40; }
+@media (max-width: 900px) { .s7, .s5 { grid-column: span 12; } }
+@media (max-width: 520px) { .row2 { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.topnav { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:13px; }
+.topnav a { color: var(--accent); text-decoration: none; font-weight: 500; }
+.topnav a:hover { text-decoration: underline; }
+.who-me { color: var(--muted); }
+.who-me b { color: var(--ink); font-weight: 600; }
+.login-ov { position: fixed; inset: 0; z-index: 50; background: var(--bg); display: grid; place-items: center; padding: 24px; }
+.login-card { width: min(420px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 26px; box-shadow: 0 20px 60px -24px rgba(15,27,45,.35); display: flex; flex-direction: column; gap: 14px; }
+.login-card .lg { display: flex; gap: 12px; align-items: center; }
+.login-card .lg img { width: 52px; height: 52px; }
+.login-card .lg span { display:block; font-size: 12px; color: var(--muted); }
+.login-card .lg b { display:block; font-size: 17px; color: var(--accent); }
+.login-card h2 { font-family: var(--font-display); font-size: 22px; margin: 0; }
+.login-card label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.login-card .field { width: 100%; color: var(--ink); font-size: 14px; font-weight: 400; }
+.login-card .err { color: var(--bad); font-size: 13px; min-height: 18px; margin: 0; }
+.login-card .btn.primary { padding: 10px 14px; }
+.login-card .mut a { color: var(--accent); }
+</style>
+
+<div class="login-ov" id="loginOv">
+  <form class="login-card" id="loginForm" autocomplete="on">
+    <div class="lg"><img src="../assets/img/logo.png" alt=""><div><span>Trường Cao đẳng Y tế Cần Thơ</span><b>Khoa Dược - Xét nghiệm</b></div></div>
+    <h2>Đăng nhập</h2>
+    <p class="mut" id="loginNote">Dùng tài khoản của trang Quản lý phòng thực hành.</p>
+    <label for="lgUser">Tên đăng nhập<input class="field" id="lgUser" autocomplete="username" required autocapitalize="none" spellcheck="false"></label>
+    <label for="lgPass">Mật khẩu<input class="field" id="lgPass" type="password" autocomplete="current-password" required></label>
+    <p class="err" id="lgErr" role="alert"></p>
+    <button class="btn primary" id="lgBtn" type="submit">Đăng nhập</button>
+    <p class="mut">Chưa có tài khoản? Liên hệ quản trị viên Khoa để được cấp. <a href="../index.html">Về trang chủ Khoa</a></p>
+  </form>
+</div>
+
+<div class="app">
+  <nav class="topnav"><a href="../index.html">← Về trang chủ Khoa</a><span class="who-me" id="whoMe"></span></nav>
+  <header>
+    <div class="head-text">
+      <div class="date" id="today"></div>
+      <h1>Bảng theo dõi tiến độ công việc</h1>
+    </div>
+    <div class="head-tools">
+      <span class="role" id="role">Đang kiểm tra quyền…</span>
+      <button class="btn sm" id="teamBtn" type="button" hidden>Nhóm phụ trách</button>
+      <button class="btn sm" id="logoutBtn" type="button">Đăng xuất</button>
+      <button class="btn bell" id="bellBtn" type="button" aria-label="Mở thông báo">Thông báo<span class="badge" id="badge" hidden>0</span></button>
+    </div>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Chế độ xem">
+    <button class="tab" id="tabBang" role="tab" type="button" aria-selected="true">Bảng việc</button>
+    <button class="tab" id="tabThongke" role="tab" type="button" aria-selected="false">Thống kê</button>
+  </div>
+  <div class="banner" id="offline" hidden>Không kết nối được cơ sở dữ liệu hoặc tài khoản chưa được cấp quyền. Bảng chỉ hiển thị ở chế độ xem.</div>
+
+  <section id="viewBang" aria-labelledby="tabBang" style="display: contents">
+    <div class="progress" aria-live="polite">
+      <div class="progress-top"><strong id="pct">0%</strong><span id="pctText">Chưa có việc nào</span></div>
+      <div class="bar" id="bar" role="img" aria-label="Phân bổ công việc theo trạng thái"></div>
+    </div>
+    <p class="hint">Kéo thả thẻ giữa các cột hoặc dùng nút mũi tên để cập nhật trạng thái. Bấm vào tên việc để sửa chi tiết, hạn chót và ghi chú.</p>
+
+    <form class="add" id="addForm">
+      <input class="field" type="text" id="newTitle" placeholder="Việc mới cần làm…" maxlength="160" aria-label="Tên việc mới" autocomplete="off">
+      <select class="field" id="newStatus" aria-label="Cột">
+        <option value="todo">Cần làm</option><option value="doing">Đang làm</option>
+        <option value="review">Đang chờ</option><option value="done">Đã hoàn thành</option>
+      </select>
+      <select class="field" id="newPriority" aria-label="Mức ưu tiên">
+        <option value="high">Ưu tiên cao</option><option value="med" selected>Ưu tiên vừa</option><option value="low">Ưu tiên thấp</option>
+      </select>
+      <select class="field" id="newUnit" aria-label="Nơi nhận"></select>
+      <input class="field" type="text" id="newPerson" placeholder="Tên người nhận" aria-label="Tên người nhận" maxlength="80" hidden autocomplete="off">
+      <input class="field" type="text" id="newOther" placeholder="Nhập nơi nhận" aria-label="Nơi nhận tự điền" maxlength="120" hidden autocomplete="off">
+      <select class="field" id="newAssignee" aria-label="Người phụ trách" hidden></select>
+      <input class="field" type="date" id="newDue" aria-label="Ngày hoàn thành">
+      <input class="field" type="time" id="newTime" aria-label="Giờ hoàn thành">
+      <button class="btn primary" type="submit">Thêm việc</button>
+    </form>
+
+    <div class="filters">
+      <input class="field" type="search" id="fSearch" placeholder="Tìm theo tên việc, người nhận, ghi chú…" aria-label="Tìm việc" autocomplete="off">
+      <select class="field" id="fUnit" aria-label="Lọc theo nơi nhận"></select>
+      <select class="field" id="fAssignee" aria-label="Lọc theo người phụ trách"></select>
+    </div>
+
+    <main class="board" id="board"></main>
+  </section>
+
+  <section id="viewThongke" hidden aria-labelledby="tabThongke">
+    <div class="dash" id="dash"></div>
+  </section>
+</div>
+
+<div class="overlay drawer-ov" id="drawerOv" hidden>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle"></aside>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <h3 id="sheetTitle">Chi tiết công việc</h3>
+    <label for="eTitle">Tên việc<input class="field" id="eTitle" type="text" maxlength="160"></label>
+    <label for="eNote">Ghi chú<textarea class="field" id="eNote" maxlength="2000"></textarea></label>
+    <div class="row2">
+      <label for="eStatus">Trạng thái
+        <select class="field" id="eStatus">
+          <option value="todo">Cần làm</option><option value="doing">Đang làm</option>
+          <option value="review">Đang chờ</option><option value="done">Đã hoàn thành</option>
+        </select>
+      </label>
+      <label for="ePriority">Ưu tiên
+        <select class="field" id="ePriority"><option value="high">Cao</option><option value="med">Vừa</option><option value="low">Thấp</option></select>
+      </label>
+    </div>
+    <label for="eAssignee">Người phụ trách<select class="field" id="eAssignee"></select></label>
+    <label for="eUnit">Nơi nhận<select class="field" id="eUnit"></select></label>
+    <label for="ePerson" id="ePersonL" hidden>Tên người nhận<input class="field" id="ePerson" type="text" maxlength="80" placeholder="Viết tên người nhận" autocomplete="off"></label>
+    <label for="eOther" id="eOtherL" hidden>Nơi nhận (tự điền)<input class="field" id="eOther" type="text" maxlength="120" placeholder="Viết tên nơi nhận" autocomplete="off"></label>
+    <div class="row2">
+      <label for="eDue">Hạn: ngày<input class="field" id="eDue" type="date"></label>
+      <label for="eTime">Hạn: giờ<input class="field" id="eTime" type="time"></label>
+    </div>
+    <div class="row2" id="eDoneRow" hidden>
+      <label for="eDoneDate">Hoàn thành thực tế: ngày<input class="field" id="eDoneDate" type="date"></label>
+      <label for="eDoneTime">Hoàn thành thực tế: giờ<input class="field" id="eDoneTime" type="time"></label>
+    </div>
+    <div class="row2">
+      <label for="eLinkType">Liên kết ngoài
+        <select class="field" id="eLinkType">
+          <option value="">Không có</option><option value="email">Email</option><option value="slack">Slack</option>
+          <option value="teams">Microsoft Teams</option><option value="jira">Jira</option><option value="crm">CRM</option><option value="khac">Khác</option>
+        </select>
+      </label>
+      <label for="eLink">Mã hoặc đường dẫn<input class="field" id="eLink" type="text" maxlength="300" placeholder="VD: DXN-123 hoặc https://…" autocomplete="off"></label>
+    </div>
+    <div class="hist" id="eHist" hidden></div>
+    <div class="actions">
+      <button class="btn danger" id="eDelete" type="button">Xóa việc</button>
+      <div class="right">
+        <button class="btn" id="eClose" type="button">Đóng</button>
+        <button class="btn primary" id="eSave" type="button">Lưu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="teamOv" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="teamTitle">
+    <h3 id="teamTitle">Nhóm phụ trách</h3>
+    <p class="mut">Mỗi dòng một tên. Danh sách này xuất hiện trong ô “Người phụ trách”. Chỉ quản trị viên sửa được.</p>
+    <label for="teamText" style="font-size:12px;font-weight:600;color:var(--muted)">Danh sách tên<textarea class="field" id="teamText" style="min-height:140px;width:100%;margin-top:4px" maxlength="2000"></textarea></label>
+    <div class="actions"><span></span><div class="right"><button class="btn" id="teamClose" type="button">Đóng</button><button class="btn primary" id="teamSave" type="button">Lưu danh sách</button></div></div>
+  </div>
+</div>
+
+<div class="overlay" id="textOv" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="textTitle">
+    <h3 id="textTitle">Bản tin tiến độ</h3>
+    <p class="mut">Sao chép nội dung này rồi dán vào email, Slack hoặc Microsoft Teams.</p>
+    <textarea class="field" id="textBody" readonly style="min-height:220px;width:100%;font-family:var(--font-mono);font-size:12.5px" aria-label="Nội dung bản tin"></textarea>
+    <div class="actions"><span></span><div class="right"><button class="btn" id="textClose" type="button">Đóng</button><button class="btn primary" id="textCopy" type="button">Sao chép</button></div></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="../phong-thuc-hanh/firebase-config.js?v=2"></script>
+<script>
+(function () {
+  var COLS = [
+    { id: "todo", vi: "Cần làm", en: "To-Do" },
+    { id: "doing", vi: "Đang làm", en: "In Progress" },
+    { id: "review", vi: "Đang chờ", en: "Review" },
+    { id: "done", vi: "Đã hoàn thành", en: "Done" }
+  ];
+  var IDS = COLS.map(function (c) { return c.id; });
+  var VI = {}; COLS.forEach(function (c) { VI[c.id] = c.vi; });
+  var ALIAS = { "to-do": "todo", "to do": "todo", "in progress": "doing", "in-progress": "doing", "inprogress": "doing", "waiting": "review", "completed": "done" };
+  var PRI = { high: "Cao", med: "Vừa", low: "Thấp" };
+  var PCOL = { high: "var(--bad)", med: "var(--doing)", low: "var(--todo)" };
+  var LINKS = { email: "Email", slack: "Slack", teams: "Teams", jira: "Jira", crm: "CRM", khac: "Liên kết" };
+  var UNITS = [
+    { id: "bgh", label: "Ban Giám hiệu", short: "Ban Giám hiệu" },
+    { id: "dt", label: "Phòng Đào tạo", short: "P. Đào tạo", person: true },
+    { id: "tccb", label: "Phòng Tổ chức cán bộ", short: "P. Tổ chức cán bộ", person: true },
+    { id: "hcqt", label: "Phòng Hành chính - Quản trị", short: "P. Hành chính - Quản trị", person: true },
+    { id: "qlhssv", label: "Phòng Quản lý Học sinh sinh viên", short: "P. QL HSSV", person: true },
+    { id: "tckt", label: "Phòng Tài chính - Kế toán", short: "P. Tài chính - Kế toán", person: true },
+    { id: "kd", label: "Phòng Kiểm định - Bảo đảm chất lượng", short: "P. Kiểm định - BĐCL", person: true },
+    { id: "nchtdttx", label: "Phòng Nghiên cứu hợp tác - Đào tạo thường xuyên", short: "P. NCHT - ĐTTX", person: true },
+    { id: "tyt", label: "Trạm Y tế", short: "Trạm Y tế" },
+    { id: "other", label: "Khác (tự điền tay)", short: "Khác", other: true }
+  ];
+  var DAY = 86400000, HOUR = 3600000;
+
+  var tasks = [], acts = [], members = [], loaded = false;
+  var db = null, userCap = null, dl = null, col = null, actCol = null;
+  var me = { id: null, name: "" }, perm = { write: false, admin: false };
+  var editingId = null, dragId = null, tab = "bang", range = "week", seenPrev = 0, drawerOpen = false;
+  var nameCache = {}, toastTimer = null;
+  var $ = function (id) { return document.getElementById(id); };
+  var board = $("board");
+
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function p2(n) { return String(n).padStart(2, "0"); }
+  function ymd(d) { return d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate()); }
+  function hm(d) { return p2(d.getHours()) + ":" + p2(d.getMinutes()); }
+  function normStatus(s) { s = String(s || "todo").toLowerCase().trim(); s = ALIAS[s] || s; return IDS.indexOf(s) >= 0 ? s : "todo"; }
+  function toast(msg) { var t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 3400); }
+  function fmtDue(s) { var p = String(s).split("-"); return p.length === 3 ? p[2] + "/" + p[1] : s; }
+  function fmtDT(ms) { var d = new Date(ms); return p2(d.getDate()) + "/" + p2(d.getMonth() + 1) + " " + hm(d); }
+  function num1(n) { return (Math.round(n * 10) / 10).toString().replace(".", ","); }
+  function fmtAge(ms) {
+    ms = Math.abs(ms);
+    if (ms < HOUR) return "dưới 1 giờ";
+    if (ms < DAY) return Math.round(ms / HOUR) + " giờ";
+    return num1(ms / DAY) + " ngày";
+  }
+  function fmtRel(ms) {
+    var d = Date.now() - ms;
+    if (d < 60000) return "vừa xong";
+    if (d < HOUR) return Math.floor(d / 60000) + " phút trước";
+    if (d < DAY) return Math.floor(d / HOUR) + " giờ trước";
+    return fmtDT(ms);
+  }
+  function initials(s) { var w = String(s || "?").trim().split(/\s+/); return (w[w.length - 1] || "?").charAt(0).toUpperCase(); }
+
+  function unitOf(id) { return UNITS.filter(function (u) { return u.id === id; })[0]; }
+  function unitIdx(id) { for (var i = 0; i < UNITS.length; i++) if (UNITS[i].id === id) return i; return -1; }
+  function unitColor(id) { if (id === "other") return "var(--c8)"; var i = unitIdx(id); return "var(--c" + (i < 0 ? 8 : (i % 8) + 1) + ")"; }
+  function recipientText(t) {
+    var u = unitOf(t.unit); if (!u) return "";
+    if (u.other) return t.unitOther || "Khác";
+    return u.label + (u.person && t.person ? " – " + t.person : "");
+  }
+  function recFields(unit, person, other) {
+    var u = unitOf(unit);
+    return { unit: u ? u.id : "", person: u && u.person ? String(person).trim() : "", unitOther: u && u.other ? String(other).trim() : "" };
+  }
+  function fillUnits(sel, first) {
+    var v = sel.value;
+    sel.innerHTML = '<option value="">' + first + "</option>" + UNITS.map(function (u) { return '<option value="' + u.id + '">' + esc(u.label) + "</option>"; }).join("");
+    sel.value = v;
+  }
+  function syncAddUnit() { var u = unitOf($("newUnit").value); $("newPerson").hidden = !(u && u.person); $("newOther").hidden = !(u && u.other); }
+  function syncSheetUnit() { var u = unitOf($("eUnit").value); $("ePersonL").hidden = !(u && u.person); $("eOtherL").hidden = !(u && u.other); }
+
+  function dueMs(t) { return t.due ? new Date(t.due + "T" + (t.dueTime || "23:59") + ":00").getTime() : null; }
+  function isOpen(t) { return t.status !== "done"; }
+  function isOverdue(t) { var d = dueMs(t); return isOpen(t) && d != null && d < Date.now(); }
+  function isSoon(t) { var d = dueMs(t), n = Date.now(); return isOpen(t) && d != null && d >= n && d - n <= DAY; }
+  function sinceMs(t) { return t.statusSince || t.updatedAt || t.createdAt || Date.now(); }
+  function onTime(t) { var d = dueMs(t); return t.status === "done" && t.completedAt && d != null ? t.completedAt <= d : null; }
+  function find(id) { return tasks.filter(function (t) { return t.id === id; })[0]; }
+
+  /* ---------- assignees ---------- */
+  function assigneeNames() {
+    var set = members.slice();
+    tasks.forEach(function (t) { if (t.assignee && set.indexOf(t.assignee) < 0) set.push(t.assignee); });
+    return set;
+  }
+  function fillAssignee(sel, first, extra) {
+    var v = sel.value, names = assigneeNames();
+    if (extra && names.indexOf(extra) < 0) names.push(extra);
+    sel.innerHTML = '<option value="">' + first + "</option>" + names.map(function (n) { return '<option value="' + esc(n) + '">' + esc(n) + "</option>"; }).join("");
+    sel.value = v;
+  }
+  function refreshSelects() {
+    fillAssignee($("newAssignee"), "Chưa phân công");
+    var f = $("fAssignee"), v = f.value, names = assigneeNames();
+    f.innerHTML = '<option value="">Mọi người phụ trách</option><option value="__none">Chưa phân công</option>' + names.map(function (n) { return '<option value="' + esc(n) + '">' + esc(n) + "</option>"; }).join("");
+    f.value = v;
+  }
+
+  /* ---------- activity ---------- */
+  async function logAct(kind, t, detail, toStatus) {
+    if (!actCol) return;
+    try {
+      await actCol.add({ at: Date.now(), actorId: me.id || null, kind: kind, taskId: t.id || "", title: t.title || "", detail: detail || "", toStatus: toStatus || "" });
+    } catch (e) { /* the change itself already saved */ }
+  }
+  function actorName(a) {
+    if (a.actorId) return me.id && a.actorId === me.id ? "Bạn" : (nameCache[a.actorId] || "Thành viên");
+    return a.actorLabel || "Ai đó";
+  }
+
+  /* ---------- writes ---------- */
+  function statusFx(t, status, data) {
+    var now = Date.now();
+    data.statusSince = now;
+    if (status === "doing" && !t.startedAt) data.startedAt = now;
+    if (status === "done") { if (!data.completedAt) data.completedAt = now; }
+    else if (t.completedAt) data.completedAt = null;
+  }
+  async function updateTask(id, data, kind, detail, toStatus) {
+    if (!col) { toast("Bảng đang ở chế độ xem, không thể sửa."); return false; }
+    var t = find(id) || { id: id };
+    try { data.updatedAt = Date.now(); await col.doc(id).update(data); logAct(kind, t, detail, toStatus); return true; }
+    catch (e) { toast("Không lưu được thay đổi. Cần quyền Thành viên trở lên."); return false; }
+  }
+  function moveTo(id, status, beforeId) {
+    var t = find(id); if (!t || !perm.write) return;
+    var list = tasks.filter(function (x) { return x.status === status && x.id !== id; }).sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
+    var order;
+    if (beforeId) {
+      var i = list.map(function (x) { return x.id; }).indexOf(beforeId);
+      if (i >= 0) { var nxt = list[i], prev = list[i - 1]; order = prev ? (prev.order + nxt.order) / 2 : nxt.order - 1000; }
+    }
+    if (order == null) order = list.length ? list[list.length - 1].order + 1000 : Date.now();
+    var data = { order: order };
+    if (status !== t.status) { data.status = status; statusFx(t, status, data); updateTask(id, data, "status", VI[t.status] + " → " + VI[status], status); }
+    else updateTask(id, data, "order", "");
+  }
+
+  /* ---------- board ---------- */
+  function matches(t) {
+    var q = $("fSearch").value.trim().toLowerCase();
+    var fu = $("fUnit").value, fa = $("fAssignee").value;
+    if (fu && t.unit !== fu) return false;
+    if (fa === "__none" && t.assignee) return false;
+    if (fa && fa !== "__none" && t.assignee !== fa) return false;
+    if (!q) return true;
+    var hay = [t.title, t.note, t.person, t.assignee, recipientText(t), t.linkRef].join(" ").toLowerCase();
+    return hay.indexOf(q) >= 0;
+  }
+  function linkChip(t) {
+    if (!t.linkType && !t.linkRef) return "";
+    var label = (LINKS[t.linkType] || "Liên kết") + (t.linkRef ? " · " + esc(t.linkRef) : "");
+    if (/^https?:\/\//i.test(t.linkRef || "")) return '<a class="chip link" href="' + esc(t.linkRef) + '" target="_blank" rel="noopener noreferrer">' + esc(LINKS[t.linkType] || "Liên kết") + " ↗</a>";
+    return '<span class="chip link">' + label + "</span>";
+  }
+  function cardHtml(t, idx) {
+    var late = isOverdue(t), pri = PRI[t.priority] ? t.priority : "med", ro = !perm.write;
+    var age = Date.now() - sinceMs(t);
+    var stale = t.status !== "done" && t.status !== "todo" && age >= 3 * DAY;
+    return '<article class="card' + (ro ? " ro" : "") + '" draggable="' + (ro ? "false" : "true") + '" data-id="' + esc(t.id) + '">' +
+      '<button class="card-title" type="button" data-act="edit">' + esc(t.title || "(không tên)") + "</button>" +
+      (t.note ? '<p class="note">' + esc(t.note) + "</p>" : "") +
+      '<div class="meta">' +
+        '<span class="chip" style="--p:' + PCOL[pri] + '"><i></i>' + PRI[pri] + "</span>" +
+        (t.due ? '<span class="chip date-chip' + (late ? " late" : "") + '">' + (late ? "Quá hạn " : "Hạn ") + (t.dueTime ? esc(t.dueTime) + " " : "") + esc(fmtDue(t.due)) + "</span>" : "") +
+        (stale ? '<span class="chip stale">Tồn ' + esc(fmtAge(age)) + "</span>" : "") +
+        (t.assignee ? '<span class="chip who"><b>' + esc(initials(t.assignee)) + "</b>" + esc(t.assignee) + "</span>" : "") +
+        (recipientText(t) ? '<span class="chip unit">Nơi nhận: ' + esc(recipientText(t)) + "</span>" : "") +
+        linkChip(t) +
+        (t.sample ? '<span class="chip sample">Mẫu</span>' : "") +
+        '<span class="moves">' +
+          '<button type="button" data-act="prev" aria-label="Chuyển sang cột trước"' + (idx === 0 || ro ? " disabled" : "") + ">‹</button>" +
+          '<button type="button" data-act="next" aria-label="Chuyển sang cột sau"' + (idx === IDS.length - 1 || ro ? " disabled" : "") + ">›</button>" +
+        "</span>" +
+      "</div></article>";
+  }
+  function renderBoard() {
+    var filtered = $("fSearch").value || $("fUnit").value || $("fAssignee").value;
+    board.innerHTML = COLS.map(function (c, idx) {
+      var items = tasks.filter(function (t) { return t.status === c.id && matches(t); }).sort(function (a, b) { return (a.order || 0) - (b.order || 0); });
+      return '<section class="col ' + c.id + '" data-status="' + c.id + '" style="--c:var(--' + c.id + ')" aria-label="' + c.vi + '">' +
+        '<div class="col-head"><span class="dot"></span><h2>' + c.vi + '</h2><span class="en">' + c.en + '</span><span class="count">' + items.length + "</span></div>" +
+        (items.length ? items.map(function (t) { return cardHtml(t, idx); }).join("") :
+          '<div class="empty">' + (!loaded ? "Đang tải…" : filtered ? "Không có việc khớp bộ lọc." : "Chưa có việc nào. Kéo thẻ vào đây hoặc thêm việc sang cột này.") + "</div>") +
+        "</section>";
+    }).join("");
+  }
+  function renderProgress() {
+    var total = tasks.length, counts = {};
+    IDS.forEach(function (id) { counts[id] = tasks.filter(function (t) { return t.status === id; }).length; });
+    $("pct").textContent = total ? Math.round(counts.done / total * 100) + "%" : "0%";
+    $("pctText").textContent = total ? counts.done + "/" + total + " việc đã hoàn thành" : "Chưa có việc nào";
+    $("bar").innerHTML = total ? IDS.map(function (id) {
+      return counts[id] ? '<i style="--c:var(--' + id + ');flex-grow:' + counts[id] + '" title="' + esc(VI[id]) + ": " + counts[id] + '"></i>' : "";
+    }).join("") : "";
+  }
+
+  /* ---------- statistics ---------- */
+  function gauge(p, label, sub, cv) {
+    var v = p == null ? 0 : Math.max(0, Math.min(100, p));
+    var arc = "M10 62 A50 50 0 0 1 110 62";
+    return '<div class="gauge"><svg viewBox="0 0 120 70" role="img" aria-label="' + esc(label) + ": " + (p == null ? "chưa có dữ liệu" : Math.round(p) + "%") + '">' +
+      '<path d="' + arc + '" pathLength="100" class="g-track"/>' +
+      (p == null || v === 0 ? "" : '<path d="' + arc + '" pathLength="100" class="g-val" style="stroke:var(--' + cv + ");stroke-dasharray:" + v + ' 100"/>') +
+      '<text x="60" y="56" text-anchor="middle" class="g-num">' + (p == null ? "—" : Math.round(p) + "%") + "</text></svg>" +
+      '<div class="g-label">' + esc(label) + '</div><div class="g-sub">' + esc(sub) + "</div></div>";
+  }
+  function squarify(items, W, H) {
+    var total = items.reduce(function (a, i) { return a + i.value; }, 0), out = [];
+    if (!total) return out;
+    var scale = W * H / total, x = 0, y = 0, w = W, h = H;
+    var nodes = items.map(function (i) { return { it: i, area: i.value * scale }; });
+    function sum(r) { return r.reduce(function (a, n) { return a + n.area; }, 0); }
+    function worst(r, side) {
+      var s = sum(r), mx = Math.max.apply(null, r.map(function (n) { return n.area; })), mn = Math.min.apply(null, r.map(function (n) { return n.area; }));
+      return Math.max(side * side * mx / (s * s), s * s / (side * side * mn));
+    }
+    function lay(r) {
+      var s = sum(r);
+      if (w >= h) { var cw = s / h, cy = y; r.forEach(function (n) { var ch = n.area / cw; out.push({ it: n.it, x: x, y: cy, w: cw, h: ch }); cy += ch; }); x += cw; w -= cw; }
+      else { var rh = s / w, cx = x; r.forEach(function (n) { var rw = n.area / rh; out.push({ it: n.it, x: cx, y: y, w: rw, h: rh }); cx += rw; }); y += rh; h -= rh; }
+    }
+    var row = [], i = 0;
+    while (i < nodes.length) {
+      var side = Math.min(w, h), test = row.concat([nodes[i]]);
+      if (!row.length || worst(test, side) <= worst(row, side)) { row = test; i++; } else { lay(row); row = []; }
+    }
+    if (row.length) lay(row);
+    return out;
+  }
+  function treemapHtml() {
+    var g = {};
+    tasks.forEach(function (t) { var k = unitOf(t.unit) ? t.unit : ""; g[k] = (g[k] || 0) + 1; });
+    var items = Object.keys(g).map(function (k) { return { key: k, value: g[k], name: k ? unitOf(k).short : "Chưa chọn" }; }).sort(function (a, b) { return b.value - a.value; });
+    if (!items.length) return '<p class="mut">Chưa có việc nào để thống kê.</p>';
+    var H = 62, total = tasks.length;
+    return '<div class="tree" role="img" aria-label="Số việc theo nơi nhận">' + squarify(items, 100, H).map(function (r) {
+      return '<div class="tile" style="left:' + r.x + "%;top:" + (r.y / H * 100) + "%;width:" + r.w + "%;height:" + (r.h / H * 100) + '%"><div style="--tc:' + (r.it.key ? unitColor(r.it.key) : "var(--c8)") + '"><b>' + esc(r.it.name) + "</b><span>" + r.it.value + " việc · " + Math.round(r.it.value / total * 100) + "%</span></div></div>";
+    }).join("") + "</div>";
+  }
+  function donutHtml() {
+    var total = tasks.length, cum = 0, circles = "";
+    var counts = IDS.map(function (id) { return tasks.filter(function (t) { return t.status === id; }).length; });
+    if (total) counts.forEach(function (n, i) {
+      if (!n) return;
+      var len = n / total * 100;
+      circles += '<circle class="seg-c" cx="21" cy="21" r="15.9155" transform="rotate(-90 21 21)" style="stroke:var(--' + IDS[i] + ");stroke-dasharray:" + len + " " + (100 - len) + ";stroke-dashoffset:" + (-cum) + '"/>';
+      cum += len;
+    });
+    return '<div class="donut-wrap"><svg class="donut" viewBox="0 0 42 42" role="img" aria-label="Tổng ' + total + ' việc"><circle class="d-track" cx="21" cy="21" r="15.9155"/>' + circles +
+      '<text x="21" y="22.5" style="font-family:var(--font-display);font-weight:700;font-size:8px">' + total + '</text><text x="21" y="28" style="font-size:3.2px;fill:var(--muted)">việc</text></svg>' +
+      '<ul class="legend">' + IDS.map(function (id, i) {
+        return '<li><i class="dot" style="--c:var(--' + id + ')"></i><span>' + VI[id] + "</span><span>" + counts[i] + (total ? " · " + Math.round(counts[i] / total * 100) + "%" : "") + "</span></li>";
+      }).join("") + "</ul></div>";
+  }
+  function chartHtml() {
+    var n = range === "week" ? 8 : 14, step = range === "week" ? 7 * DAY : DAY, now = new Date(), start;
+    if (range === "week") { var d0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()); var dow = (d0.getDay() + 6) % 7; start = d0.getTime() - dow * DAY; }
+    else start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    var starts = [], i; for (i = n - 1; i >= 0; i--) starts.push(start - i * step);
+    var comp = starts.map(function () { return 0; }), crea = comp.slice();
+    function bucket(ts) { for (var k = 0; k < starts.length; k++) if (ts >= starts[k] && ts < starts[k] + step) return k; return -1; }
+    tasks.forEach(function (t) {
+      if (t.status === "done" && t.completedAt) { var b = bucket(t.completedAt); if (b >= 0) comp[b]++; }
+      if (t.createdAt) { var c = bucket(t.createdAt); if (c >= 0) crea[c]++; }
+    });
+    var mx = Math.max.apply(null, comp.concat(crea).concat([1])), st = Math.ceil(mx / 4), ymax = st * 4;
+    var X0 = 30, X1 = 552, Y0 = 14, Y1 = 186, bw = (X1 - X0) / n, g = "", bars = "", pts = [], labels = "";
+    for (i = 0; i <= 4; i++) { var gy = Y1 - (Y1 - Y0) * i / 4; g += '<line class="grid" x1="' + X0 + '" x2="' + X1 + '" y1="' + gy + '" y2="' + gy + '"/><text x="' + (X0 - 6) + '" y="' + (gy + 3) + '" text-anchor="end">' + (st * i) + "</text>"; }
+    for (i = 0; i < n; i++) {
+      var cx = X0 + bw * i + bw / 2, h = (Y1 - Y0) * comp[i] / ymax, ly = Y1 - (Y1 - Y0) * crea[i] / ymax, d = new Date(starts[i]);
+      if (comp[i]) bars += '<rect x="' + (cx - bw * 0.3) + '" y="' + (Y1 - h) + '" width="' + (bw * 0.6) + '" height="' + h + '" rx="2" style="fill:var(--done)"><title>' + comp[i] + " việc hoàn thành</title></rect>";
+      pts.push([cx, ly]);
+      if (range === "week" || i % 2 === 0 || i === n - 1) labels += '<text x="' + cx + '" y="' + (Y1 + 14) + '" text-anchor="middle">' + p2(d.getDate()) + "/" + p2(d.getMonth() + 1) + "</text>";
+    }
+    var line = pts.map(function (p, k) { return (k ? "L" : "M") + p[0] + " " + p[1]; }).join(" ");
+    var dots = pts.map(function (p, k) { return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"><title>' + crea[k] + " việc tạo mới</title></circle>"; }).join("");
+    var totalComp = comp.reduce(function (a, b) { return a + b; }, 0), totalCrea = crea.reduce(function (a, b) { return a + b; }, 0);
+    return '<div class="legend-inline"><span><i style="background:var(--done)"></i>Hoàn thành (' + totalComp + ')</span><span><i class="ln" style="background:var(--accent)"></i>Tạo mới (' + totalCrea + ")</span></div>" +
+      '<svg class="chart" viewBox="0 0 560 204" role="img" aria-label="Việc hoàn thành và tạo mới theo ' + (range === "week" ? "tuần" : "ngày") + '">' + g + bars + '<path d="' + line + '" style="fill:none;stroke:var(--accent);stroke-width:2"/>' + dots + labels + "</svg>" +
+      (totalComp === 0 ? '<p class="mut">Chưa có việc nào có ngày hoàn thành thực tế trong khoảng này. Cột xanh chỉ tính việc có ghi ngày hoàn thành.</p>' : "");
+  }
+  function ontimeHtml() {
+    var g = {};
+    tasks.forEach(function (t) {
+      var r = onTime(t); if (r == null) return;
+      var k = unitOf(t.unit) ? t.unit : ""; g[k] = g[k] || { n: 0, ok: 0 }; g[k].n++; if (r) g[k].ok++;
+    });
+    var keys = Object.keys(g).sort(function (a, b) { return g[b].n - g[a].n; });
+    if (!keys.length) return '<p class="mut">Chưa đủ dữ liệu. Cần việc đã xong có hạn chót và ngày hoàn thành thực tế.</p>';
+    return '<div class="rows">' + keys.map(function (k) {
+      var p = g[k].ok / g[k].n * 100, nm = k ? unitOf(k).short : "Chưa chọn";
+      return '<div class="rrow"><span class="av" style="--ac:' + (k ? unitColor(k) : "var(--c8)") + '">' + esc(initials(nm.replace(/^P\.\s*/, ""))) + '</span><span class="rname">' + esc(nm) + '</span><span class="rval">' + Math.round(p) + "% · " + g[k].ok + "/" + g[k].n + '</span><div class="track"><i style="--fc:' + (p >= 80 ? "var(--done)" : p >= 50 ? "var(--doing)" : "var(--bad)") + ";width:" + p + '%"></i></div></div>';
+    }).join("") + "</div>";
+  }
+  function bottleneckHtml() {
+    var rows = ["todo", "doing", "review"].map(function (id) {
+      var list = tasks.filter(function (t) { return t.status === id; });
+      var ages = list.map(function (t) { return Date.now() - sinceMs(t); });
+      var avg = ages.length ? ages.reduce(function (a, b) { return a + b; }, 0) / ages.length : 0;
+      var oldest = null; list.forEach(function (t) { if (!oldest || sinceMs(t) < sinceMs(oldest)) oldest = t; });
+      return { id: id, n: list.length, avg: avg, oldest: oldest };
+    });
+    var hot = null; rows.forEach(function (r) { if (r.n && r.avg >= DAY && (!hot || r.avg > hot.avg)) hot = r; });
+    var finds = [];
+    if (hot) finds.push('Cột “' + VI[hot.id] + '” giữ việc lâu nhất: trung bình ' + fmtAge(hot.avg) + ', lâu nhất là “' + esc(hot.oldest.title) + '” (' + fmtAge(Date.now() - sinceMs(hot.oldest)) + ").");
+    var over = tasks.filter(isOverdue);
+    if (over.length) {
+      var gu = {}; over.forEach(function (t) { var nm = unitOf(t.unit) ? unitOf(t.unit).short : "Chưa chọn nơi nhận"; gu[nm] = (gu[nm] || 0) + 1; });
+      var top = Object.keys(gu).sort(function (a, b) { return gu[b] - gu[a]; })[0];
+      finds.push(over.length + " việc đang quá hạn, nhiều nhất ở " + esc(top) + " (" + gu[top] + ").");
+    }
+    var soon = tasks.filter(isSoon).length; if (soon) finds.push(soon + " việc đến hạn trong 24 giờ tới.");
+    var open = {}; tasks.filter(isOpen).forEach(function (t) { var nm = unitOf(t.unit) ? unitOf(t.unit).short : "Chưa chọn nơi nhận"; open[nm] = (open[nm] || 0) + 1; });
+    var ok = Object.keys(open).sort(function (a, b) { return open[b] - open[a]; })[0];
+    if (ok && open[ok] >= 2) finds.push(esc(ok) + " đang có nhiều việc chưa xong nhất (" + open[ok] + ").");
+    if (!finds.length) finds.push("Chưa phát hiện nút thắt. Không có việc quá hạn hoặc tồn đọng quá 1 ngày.");
+    return '<div class="tbl-wrap"><table><thead><tr><th>Cột</th><th class="num">Số việc</th><th class="num">Tuổi trung bình</th><th>Tồn lâu nhất</th></tr></thead><tbody>' +
+      rows.map(function (r) {
+        return '<tr' + (hot && hot.id === r.id ? ' class="hot"' : "") + "><td>" + VI[r.id] + (hot && hot.id === r.id ? '<span class="flag">Nút thắt</span>' : "") + '</td><td class="num">' + r.n + '</td><td class="num">' + (r.n ? fmtAge(r.avg) : "—") + "</td><td>" + (r.oldest ? esc(r.oldest.title) : "—") + "</td></tr>";
+      }).join("") + '</tbody></table></div><ul class="finds">' + finds.map(function (f) { return "<li>" + f + "</li>"; }).join("") + "</ul>";
+  }
+  function peopleHtml() {
+    var rec = {}, asg = {};
+    tasks.forEach(function (t) {
+      if (t.person) { rec[t.person] = rec[t.person] || { n: 0, d: 0 }; rec[t.person].n++; if (t.status === "done") rec[t.person].d++; }
+      if (t.assignee) { asg[t.assignee] = asg[t.assignee] || { open: 0, d: 0 }; if (t.status === "done") asg[t.assignee].d++; else asg[t.assignee].open++; }
+    });
+    var rk = Object.keys(rec).sort(function (a, b) { return rec[b].n - rec[a].n; }).slice(0, 5), mx = rk.length ? rec[rk[0]].n : 1;
+    var out = '<h3 style="margin:0;font-size:13px">Người nhận nhiều việc nhất</h3>' + (rk.length ? '<div class="rows">' + rk.map(function (k, i) {
+      return '<div class="rrow"><span class="av" style="--ac:var(--c' + ((i % 8) + 1) + ')">' + esc(initials(k)) + '</span><span class="rname">' + esc(k) + '</span><span class="rval">' + rec[k].d + "/" + rec[k].n + ' xong</span><div class="track"><i style="--fc:var(--accent);width:' + (rec[k].n / mx * 100) + '%"></i></div></div>';
+    }).join("") + "</div>" : '<p class="mut">Chưa có việc nào ghi tên người nhận.</p>');
+    var ak = Object.keys(asg).sort(function (a, b) { return (asg[b].open + asg[b].d) - (asg[a].open + asg[a].d); }).slice(0, 5);
+    out += '<h3 style="margin:8px 0 0;font-size:13px">Tải việc theo người phụ trách</h3>' + (ak.length ? '<div class="rows">' + ak.map(function (k, i) {
+      var tot = asg[k].open + asg[k].d;
+      return '<div class="rrow"><span class="av" style="--ac:var(--c' + ((i % 8) + 1) + ')">' + esc(initials(k)) + '</span><span class="rname">' + esc(k) + '</span><span class="rval">' + asg[k].open + " đang mở · " + asg[k].d + ' xong</span><div class="track"><i style="--fc:var(--done);width:' + (asg[k].d / tot * 100) + '%"></i></div></div>';
+    }).join("") + "</div>" : '<p class="mut">Chưa phân công ai. Quản lý chọn “Người phụ trách” khi mở một việc.</p>');
+    return out;
+  }
+  function renderStats() {
+    var total = tasks.length, done = tasks.filter(function (t) { return t.status === "done"; });
+    var timed = done.filter(function (t) { return onTime(t) != null; }), okN = timed.filter(function (t) { return onTime(t); }).length;
+    var openDue = tasks.filter(function (t) { return isOpen(t) && t.due; }), overN = openDue.filter(isOverdue).length;
+    var withUnit = tasks.filter(function (t) { return unitOf(t.unit); }).length;
+    var legacy = done.filter(function (t) { return !t.completedAt; });
+    var html = "";
+    if (legacy.length) {
+      html += '<div class="s12 notice"><p><b>' + legacy.length + " việc đã xong chưa có ngày hoàn thành thực tế</b>, nên chưa được tính vào tỷ lệ đúng hạn và biểu đồ theo thời gian. Mở từng việc để nhập ngày, hoặc đặt hàng loạt." + (perm.admin ? "" : " Hàng loạt chỉ Quản lý làm được.") + "</p>" +
+        (perm.admin ? '<div class="btns"><button class="btn sm" type="button" data-fill="updated">Lấy ngày cập nhật cuối</button><button class="btn sm" type="button" data-fill="due">Coi là xong đúng hạn</button></div>' : "") + "</div>";
+    }
+    html += '<section class="panel s12"><div class="panel-head"><h2>Đánh giá hiệu quả làm việc</h2><div class="btns" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" type="button" data-act2="bulletin">Bản tin</button><button class="btn sm" type="button" data-act2="csv"' + (dl ? "" : " hidden") + '>Tải CSV</button></div></div><div class="gauges">' +
+      gauge(total ? done.length / total * 100 : null, "Hoàn thành", done.length + "/" + total + " việc", "done") +
+      gauge(timed.length ? okN / timed.length * 100 : null, "Đúng hạn", timed.length ? okN + "/" + timed.length + " việc xong có hạn" : "Chưa có dữ liệu", "accent") +
+      gauge(openDue.length ? (openDue.length - overN) / openDue.length * 100 : null, "Không quá hạn", openDue.length ? overN + " quá hạn / " + openDue.length + " đang mở" : "Không có việc mở có hạn", "doing") +
+      gauge(total ? withUnit / total * 100 : null, "Đã có nơi nhận", withUnit + "/" + total + " việc", "review") +
+      "</div></section>";
+    html += '<section class="panel s7"><div class="panel-head"><h2>Thống kê theo nơi nhận</h2><p class="sub">Diện tích theo số việc</p></div>' + treemapHtml() + "</section>";
+    html += '<section class="panel s5"><div class="panel-head"><h2>Tổng số công việc</h2></div>' + donutHtml() + "</section>";
+    html += '<section class="panel s7"><div class="panel-head"><h2>Việc hoàn thành và tạo mới</h2><span class="seg"><button type="button" data-range="week" aria-pressed="' + (range === "week") + '">8 tuần</button><button type="button" data-range="day" aria-pressed="' + (range === "day") + '">14 ngày</button></span></div>' + chartHtml() + "</section>";
+    html += '<section class="panel s5"><div class="panel-head"><h2>Tỷ lệ hoàn thành đúng hạn</h2></div>' + ontimeHtml() + "</section>";
+    html += '<section class="panel s7"><div class="panel-head"><h2>Phát hiện nút thắt</h2><p class="sub">Tuổi = thời gian việc nằm trong cột hiện tại</p></div>' + bottleneckHtml() + "</section>";
+    html += '<section class="panel s5"><div class="panel-head"><h2>Theo người</h2></div>' + peopleHtml() + "</section>";
+    $("dash").innerHTML = html;
+  }
+
+  /* ---------- notifications ---------- */
+  function unreadCount() {
+    var seen = seenPrev, n = 0;
+    acts.forEach(function (a) { if (a.at > seen && !(me.id && a.actorId === me.id)) n++; });
+    return n;
+  }
+  function alertTasks() {
+    var over = tasks.filter(isOverdue).sort(function (a, b) { return dueMs(a) - dueMs(b); });
+    var soon = tasks.filter(isSoon).sort(function (a, b) { return dueMs(a) - dueMs(b); });
+    return { over: over, soon: soon };
+  }
+  function renderBell() {
+    var al = alertTasks(), n = al.over.length + al.soon.length + unreadCount();
+    var b = $("badge"); b.hidden = n === 0; b.textContent = n > 99 ? "99+" : n;
+  }
+  function renderDrawer() {
+    if (!drawerOpen) return;
+    var al = alertTasks(), missing = [];
+    acts.forEach(function (a) { if (a.actorId && !(a.actorId in nameCache) && missing.indexOf(a.actorId) < 0 && a.actorId !== me.id) missing.push(a.actorId); });
+    if (missing.length && userCap) {
+      missing.forEach(function (id) { nameCache[id] = "Thành viên"; });
+      userCap.profiles(missing).then(function (ps) { missing.forEach(function (id) { if (ps[id] && ps[id].name) nameCache[id] = ps[id].name; }); renderDrawer(); }).catch(function () {});
+    }
+    function alertLi(t, over) {
+      var d = dueMs(t), diff = d - Date.now();
+      return '<li style="--ac:' + (over ? "var(--bad)" : "var(--doing)") + '"><span class="ad"></span><div><div class="t"><b>' + esc(t.title) + '</b></div><div class="when">' + (over ? "Quá hạn " + fmtAge(diff) : "Còn " + fmtAge(diff)) + (recipientText(t) ? " · " + esc(recipientText(t)) : "") + "</div></div></li>";
+    }
+    var alerts = al.over.map(function (t) { return alertLi(t, true); }).concat(al.soon.map(function (t) { return alertLi(t, false); }));
+    var feed = acts.map(function (a) {
+      var fresh = a.at > seenPrev && !(me.id && a.actorId === me.id);
+      return '<li class="' + (fresh ? "new" : "") + '" style="--ac:' + (a.toStatus ? "var(--" + esc(a.toStatus) + ")" : "var(--muted)") + '"><span class="ad"></span><div><div class="t"><b>' + esc(actorName(a)) + "</b> · " + esc(a.title || "") + '</div><div class="when">' + esc(a.detail || "") + " · " + esc(fmtRel(a.at)) + "</div></div></li>";
+    }).join("");
+    $("drawer").innerHTML = '<div class="drawer-head"><h3 id="drawerTitle">Thông báo</h3><div style="display:flex;gap:8px"><button class="btn sm" type="button" data-act2="bulletin">Bản tin</button><button class="btn sm" type="button" data-act2="closeDrawer">Đóng</button></div></div>' +
+      "<div><h4>Cảnh báo tự động (" + alerts.length + ')</h4>' + (alerts.length ? '<ul class="alist">' + alerts.join("") + "</ul>" : '<p class="mut">Không có việc quá hạn hoặc sắp đến hạn trong 24 giờ.</p>') + "</div>" +
+      "<div><h4>Hoạt động gần đây</h4>" + (feed ? '<ul class="alist">' + feed + "</ul>" : '<p class="mut">Chưa có hoạt động nào được ghi lại. Mỗi lần thêm, chuyển cột, sửa hoặc xóa việc sẽ hiện ở đây.</p>') + "</div>" +
+      '<p class="mut">Bảng chưa tự gửi email, Slack hay Teams. Dùng nút “Bản tin” để sao chép nội dung rồi dán vào kênh bạn muốn.</p>';
+  }
+  function openDrawer() {
+    drawerOpen = true; $("drawerOv").hidden = false; renderDrawer();
+    try { localStorage.setItem("dxn_seen", String(Date.now())); } catch (e) {}
+    $("drawer").querySelector("button") && $("drawer").querySelector("button").focus();
+  }
+  function closeDrawer() {
+    drawerOpen = false; $("drawerOv").hidden = true;
+    try { seenPrev = Number(localStorage.getItem("dxn_seen")) || 0; } catch (e) {}
+    renderBell();
+  }
+
+  /* ---------- reports ---------- */
+  function bulletinText() {
+    var n = new Date(), c = {}; IDS.forEach(function (id) { c[id] = tasks.filter(function (t) { return t.status === id; }).length; });
+    var al = alertTasks(), L = [];
+    L.push("BÁO CÁO TIẾN ĐỘ CÔNG VIỆC – " + p2(n.getDate()) + "/" + p2(n.getMonth() + 1) + "/" + n.getFullYear() + " " + hm(n));
+    L.push("Tổng " + tasks.length + " việc | Hoàn thành " + c.done + (tasks.length ? " (" + Math.round(c.done / tasks.length * 100) + "%)" : "") + " | Đang làm " + c.doing + " | Đang chờ " + c.review + " | Cần làm " + c.todo);
+    if (al.over.length) { L.push(""); L.push("QUÁ HẠN (" + al.over.length + "):"); al.over.forEach(function (t) { L.push("- " + t.title + (recipientText(t) ? " – " + recipientText(t) : "") + " – hạn " + (t.dueTime || "") + " " + fmtDue(t.due)); }); }
+    if (al.soon.length) { L.push(""); L.push("SẮP ĐẾN HẠN 24 GIỜ (" + al.soon.length + "):"); al.soon.forEach(function (t) { L.push("- " + t.title + (recipientText(t) ? " – " + recipientText(t) : "") + " – hạn " + (t.dueTime || "") + " " + fmtDue(t.due)); }); }
+    if (acts.length) { L.push(""); L.push("HOẠT ĐỘNG GẦN ĐÂY:"); acts.slice(0, 8).forEach(function (a) { L.push("- " + fmtDT(a.at) + " | " + actorName(a) + " | " + a.title + (a.detail ? " (" + a.detail + ")" : "")); }); }
+    return L.join("\n");
+  }
+  function showBulletin() { $("textBody").value = bulletinText(); $("textOv").hidden = false; $("textCopy").focus(); }
+  function csvCell(v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; }
+  async function downloadCsv() {
+    if (!dl) return;
+    var head = ["Tên việc", "Trạng thái", "Ưu tiên", "Nơi nhận", "Người nhận", "Người phụ trách", "Hạn chót", "Giờ hạn", "Hoàn thành thực tế", "Liên kết", "Ghi chú"];
+    var rows = tasks.map(function (t) {
+      return [t.title, VI[t.status], PRI[t.priority] || "", unitOf(t.unit) ? (unitOf(t.unit).other ? t.unitOther : unitOf(t.unit).label) : "", t.person, t.assignee, t.due, t.dueTime, t.completedAt ? ymd(new Date(t.completedAt)) + " " + hm(new Date(t.completedAt)) : "", (t.linkType ? LINKS[t.linkType] + " " : "") + (t.linkRef || ""), t.note].map(csvCell).join(",");
+    });
+    try { await dl.save({ filename: "tien-do-cong-viec-" + ymd(new Date()) + ".csv", data: "﻿" + [head.map(csvCell).join(",")].concat(rows).join("\r\n") }); }
+    catch (e) { if (!e || e.code !== "declined") toast("Không tải được tệp CSV ở chế độ xem này."); }
+  }
+  async function backfill(mode) {
+    var list = tasks.filter(function (t) { return t.status === "done" && !t.completedAt; }), ok = 0;
+    for (var i = 0; i < list.length; i++) {
+      var t = list[i], v = mode === "due" ? (dueMs(t) || t.updatedAt || Date.now()) : (t.updatedAt || Date.now());
+      try { await col.doc(t.id).update({ completedAt: v }); ok++; } catch (e) { break; }
+    }
+    if (ok) { logAct("edit", { id: "", title: "Ngày hoàn thành" }, "Bổ sung ngày hoàn thành cho " + ok + " việc cũ", ""); toast("Đã bổ sung ngày hoàn thành cho " + ok + " việc."); }
+    else toast("Không ghi được. Cần quyền Quản lý.");
+  }
+
+  /* ---------- sheet ---------- */
+  function setSheetReadonly(ro) {
+    ["eTitle", "eNote", "eStatus", "ePriority", "eUnit", "ePerson", "eOther", "eDue", "eTime", "eDoneDate", "eDoneTime", "eLinkType", "eLink"].forEach(function (id) { $(id).disabled = ro; });
+    $("eAssignee").disabled = ro || !perm.admin;
+    $("eSave").hidden = ro; $("eDelete").hidden = !perm.admin;
+  }
+  function openSheet(t) {
+    editingId = t.id;
+    fillAssignee($("eAssignee"), "Chưa phân công", t.assignee);
+    $("eTitle").value = t.title || ""; $("eNote").value = t.note || "";
+    $("eStatus").value = t.status; $("ePriority").value = PRI[t.priority] ? t.priority : "med";
+    $("eAssignee").value = t.assignee || "";
+    $("eDue").value = t.due || ""; $("eTime").value = t.dueTime || "";
+    $("eUnit").value = unitOf(t.unit) ? t.unit : ""; $("ePerson").value = t.person || ""; $("eOther").value = t.unitOther || ""; syncSheetUnit();
+    $("eDoneRow").hidden = t.status !== "done";
+    var cd = t.completedAt ? new Date(t.completedAt) : null;
+    $("eDoneDate").value = cd ? ymd(cd) : ""; $("eDoneTime").value = cd ? hm(cd) : "";
+    $("eLinkType").value = t.linkType || ""; $("eLink").value = t.linkRef || "";
+    var h = acts.filter(function (a) { return a.taskId === t.id; }).slice(0, 5);
+    $("eHist").hidden = !h.length;
+    $("eHist").innerHTML = h.length ? "<h4>Lịch sử gần đây</h4>" + h.map(function (a) { return "<div>" + esc(fmtDT(a.at)) + " · " + esc(actorName(a)) + (a.detail ? ": " + esc(a.detail) : "") + "</div>"; }).join("") : "";
+    setSheetReadonly(!perm.write);
+    resetDelete(); $("overlay").hidden = false; $("eTitle").focus();
+  }
+  function closeSheet() { editingId = null; $("overlay").hidden = true; resetDelete(); }
+  function resetDelete() { var d = $("eDelete"); d.textContent = "Xóa việc"; d.classList.remove("armed"); }
+  $("eStatus").addEventListener("change", function () { $("eDoneRow").hidden = $("eStatus").value !== "done"; });
+  $("eUnit").addEventListener("change", syncSheetUnit);
+  $("newUnit").addEventListener("change", syncAddUnit);
+
+  $("eSave").addEventListener("click", async function () {
+    var t = find(editingId); if (!t) return closeSheet();
+    var title = $("eTitle").value.trim(); if (!title) { $("eTitle").focus(); return; }
+    var data = { title: title, note: $("eNote").value.trim(), priority: $("ePriority").value, due: $("eDue").value, dueTime: $("eDue").value ? $("eTime").value : "", linkType: $("eLinkType").value, linkRef: $("eLink").value.trim() };
+    if (perm.admin) data.assignee = $("eAssignee").value;
+    Object.assign(data, recFields($("eUnit").value, $("ePerson").value, $("eOther").value));
+    var st = $("eStatus").value, detail = [], toStatus = "";
+    if (st !== t.status) { data.status = st; data.order = Date.now(); statusFx(t, st, data); detail.push(VI[t.status] + " → " + VI[st]); toStatus = st; }
+    if (st === "done") {
+      var dd = $("eDoneDate").value;
+      if (dd) { var ms = new Date(dd + "T" + ($("eDoneTime").value || "12:00") + ":00").getTime(); if (Math.floor(ms / 60000) !== Math.floor((t.completedAt || 0) / 60000)) { data.completedAt = ms; } }
+    }
+    ["title", "note", "priority", "due", "dueTime", "assignee", "unit", "person", "unitOther", "linkType", "linkRef"].forEach(function (k) {
+      if (k in data && String(data[k] || "") !== String(t[k] || "") && k !== "status") detail.push({ title: "tên", note: "ghi chú", priority: "ưu tiên", due: "hạn", dueTime: "giờ hạn", assignee: "người phụ trách", unit: "nơi nhận", person: "người nhận", unitOther: "nơi nhận", linkType: "liên kết", linkRef: "liên kết" }[k]);
+    });
+    var uniq = detail.filter(function (x, i) { return detail.indexOf(x) === i; });
+    var statusChanged = data.status && data.status !== t.status;
+    var text = uniq.length ? (statusChanged ? uniq[0] + (uniq.length > 1 ? "; cập nhật " + uniq.slice(1).join(", ") : "") : "Cập nhật " + uniq.join(", ")) : "";
+    closeSheet();
+    if (text || data.completedAt) await updateTask(t.id, data, statusChanged ? "status" : "edit", text || "Cập nhật ngày hoàn thành", toStatus);
+  });
+  $("eDelete").addEventListener("click", async function () {
+    var d = $("eDelete");
+    if (!d.classList.contains("armed")) { d.classList.add("armed"); d.textContent = "Bấm lần nữa để xóa"; return; }
+    var t = find(editingId); closeSheet();
+    if (!col || !t) return;
+    try { await col.doc(t.id).delete(); logAct("delete", t, "Đã xóa việc"); toast("Đã xóa việc."); } catch (e) { toast("Không xóa được. Cần quyền Quản lý."); }
+  });
+  $("eClose").addEventListener("click", closeSheet);
+  $("overlay").addEventListener("click", function (e) { if (e.target === $("overlay")) closeSheet(); });
+
+  /* ---------- team sheet ---------- */
+  $("teamBtn").addEventListener("click", function () { $("teamText").value = members.join("\n"); $("teamOv").hidden = false; $("teamText").focus(); });
+  $("teamClose").addEventListener("click", function () { $("teamOv").hidden = true; });
+  $("teamOv").addEventListener("click", function (e) { if (e.target === $("teamOv")) $("teamOv").hidden = true; });
+  $("teamSave").addEventListener("click", async function () {
+    var list = $("teamText").value.split("\n").map(function (s) { return s.trim(); }).filter(function (s, i, a) { return s && a.indexOf(s) === i; }).slice(0, 60);
+    try { await db.doc("config/team").set({ members: list }); $("teamOv").hidden = true; toast("Đã lưu nhóm phụ trách."); }
+    catch (e) { toast("Không lưu được. Cần quyền Quản lý."); }
+  });
+
+  /* ---------- bulletin sheet ---------- */
+  $("textClose").addEventListener("click", function () { $("textOv").hidden = true; });
+  $("textOv").addEventListener("click", function (e) { if (e.target === $("textOv")) $("textOv").hidden = true; });
+  $("textCopy").addEventListener("click", function () {
+    var ta = $("textBody");
+    function fallback() { ta.focus(); ta.select(); toast("Đã chọn nội dung. Nhấn Ctrl+C (hoặc giữ để sao chép)."); }
+    try { navigator.clipboard.writeText(ta.value).then(function () { toast("Đã sao chép bản tin."); }, fallback); } catch (e) { fallback(); }
+  });
+
+  /* ---------- board events ---------- */
+  board.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-act]"); if (!b) return;
+    var card = b.closest(".card"); var t = card && find(card.dataset.id); if (!t) return;
+    var act = b.dataset.act, i = IDS.indexOf(t.status);
+    if (act === "edit") openSheet(t);
+    if (act === "prev" && i > 0) moveTo(t.id, IDS[i - 1]);
+    if (act === "next" && i < IDS.length - 1) moveTo(t.id, IDS[i + 1]);
+  });
+  board.addEventListener("dragstart", function (e) {
+    var card = e.target.closest(".card"); if (!card || !perm.write) { e.preventDefault(); return; }
+    dragId = card.dataset.id; e.dataTransfer.setData("text/plain", dragId); e.dataTransfer.effectAllowed = "move"; card.classList.add("dragging");
+  });
+  board.addEventListener("dragend", function () { dragId = null; board.querySelectorAll(".dragging,.over").forEach(function (n) { n.classList.remove("dragging", "over"); }); });
+  board.addEventListener("dragover", function (e) {
+    var c = e.target.closest(".col"); if (!c || !dragId) return;
+    e.preventDefault(); board.querySelectorAll(".over").forEach(function (n) { if (n !== c) n.classList.remove("over"); }); c.classList.add("over");
+  });
+  board.addEventListener("drop", function (e) {
+    var c = e.target.closest(".col"); if (!c || !dragId) return;
+    e.preventDefault();
+    var before = e.target.closest(".card"), id = dragId; dragId = null; c.classList.remove("over");
+    moveTo(id, c.dataset.status, before && before.dataset.id !== id ? before.dataset.id : null);
+  });
+  ["fSearch", "fUnit", "fAssignee"].forEach(function (id) { $(id).addEventListener("input", renderBoard); });
+
+  $("addForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var title = $("newTitle").value.trim(); if (!title) { $("newTitle").focus(); return; }
+    if (!col || !perm.write) { toast("Bạn chỉ có quyền xem, không thể thêm việc."); return; }
+    var now = Date.now(), st = $("newStatus").value;
+    var data = Object.assign(recFields($("newUnit").value, $("newPerson").value, $("newOther").value), {
+      title: title, note: "", status: st, priority: $("newPriority").value, due: $("newDue").value, dueTime: $("newDue").value ? $("newTime").value : "",
+      assignee: perm.admin ? $("newAssignee").value : "", linkType: "", linkRef: "", order: now, createdAt: now, updatedAt: now, statusSince: now,
+      startedAt: st === "doing" ? now : null, completedAt: st === "done" ? now : null
+    });
+    try {
+      var ref = await col.add(data);
+      logAct("create", { id: ref.id, title: title }, "Thêm việc mới vào " + VI[st], st);
+      $("newTitle").value = ""; $("newDue").value = ""; $("newTime").value = ""; $("newUnit").value = ""; $("newPerson").value = ""; $("newOther").value = ""; $("newAssignee").value = ""; syncAddUnit(); $("newTitle").focus();
+    } catch (err) { toast("Không thêm được việc. Cần quyền Thành viên trở lên."); }
+  });
+
+  /* ---------- tabs, drawer, stats events ---------- */
+  function setTab(t) {
+    tab = t === "thongke" ? "thongke" : "bang";
+    $("viewBang").hidden = tab !== "bang"; $("viewThongke").hidden = tab !== "thongke";
+    $("tabBang").setAttribute("aria-selected", String(tab === "bang")); $("tabThongke").setAttribute("aria-selected", String(tab === "thongke"));
+    try { history.replaceState(null, "", "#" + tab); } catch (e) {}
+    if (tab === "thongke") renderStats();
+  }
+  $("tabBang").addEventListener("click", function () { setTab("bang"); });
+  $("tabThongke").addEventListener("click", function () { setTab("thongke"); });
+  $("bellBtn").addEventListener("click", openDrawer);
+  $("drawerOv").addEventListener("click", function (e) { if (e.target === $("drawerOv")) closeDrawer(); });
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest("[data-act2]"), r = e.target.closest("[data-range]"), f = e.target.closest("[data-fill]");
+    if (a) { var k = a.dataset.act2; if (k === "bulletin") showBulletin(); if (k === "csv") downloadCsv(); if (k === "closeDrawer") closeDrawer(); }
+    if (r) { range = r.dataset.range; renderStats(); }
+    if (f && perm.admin) backfill(f.dataset.fill);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
+    if (!$("textOv").hidden) $("textOv").hidden = true;
+    else if (!$("teamOv").hidden) $("teamOv").hidden = true;
+    else if (!$("overlay").hidden) closeSheet();
+    else if (drawerOpen) closeDrawer();
+  });
+
+  function renderRole() {
+    var r = $("role");
+    r.textContent = perm.admin ? "Quản lý" : perm.write ? "Thành viên" : "Chỉ xem";
+    r.className = "role" + (perm.admin ? " admin" : "");
+    r.title = perm.admin ? "Có quyền chỉnh sửa trang: phân công, xóa việc, quản lý nhóm" : perm.write ? "Thêm, chuyển cột và sửa việc. Không phân công hay xóa." : "Chỉ xem bảng và thống kê";
+    $("teamBtn").hidden = !perm.admin; $("newAssignee").hidden = !perm.admin; $("addForm").hidden = !perm.write;
+  }
+  function renderAll() {
+    renderProgress(); renderBoard(); renderBell();
+    if (tab === "thongke") renderStats();
+    if (drawerOpen) renderDrawer();
+  }
+
+  $("today").textContent = new Date().toLocaleDateString("vi-VN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  fillUnits($("newUnit"), "Chưa chọn nơi nhận"); fillUnits($("eUnit"), "Chưa chọn nơi nhận"); fillUnits($("fUnit"), "Mọi nơi nhận");
+  refreshSelects(); renderRole(); renderAll();
+  try { seenPrev = Number(localStorage.getItem("dxn_seen")) || 0; } catch (e) {}
+  setTab((location.hash || "").replace("#", ""));
+  setInterval(function () { if (!dragId) renderAll(); }, 60000);
+
+  /* ---------- Firebase (dùng chung tài khoản với Quản lý phòng thực hành) ---------- */
+  var fb = firebase.apps.length ? firebase.app() : firebase.initializeApp(window.FIREBASE_CONFIG);
+  var fauth = fb.auth(), fdb = fb.firestore();
+  var DOMAIN = window.LOGIN_DOMAIN || "khoaduocxncmc.id.vn";
+  var COLMAP = { tasks: "td_tasks", activity: "td_activity" };
+  var unsubs = [];
+  function emailOf(u) { u = String(u || "").trim().toLowerCase(); return u.indexOf("@") >= 0 ? u : u + "@" + DOMAIN; }
+  function stopAll() { unsubs.forEach(function (f) { try { f(); } catch (e) {} }); unsubs = []; }
+  db = {
+    collection: function (n) { return fdb.collection(COLMAP[n] || n); },
+    doc: function (p) { return fdb.doc(p.replace(/^config\//, "td_config/")); }
+  };
+  userCap = {
+    profiles: function (ids) {
+      return Promise.all(ids.map(function (id) { return fdb.collection("users").doc(id).get().then(function (d) { return [id, d.exists ? d.data() : null]; }).catch(function () { return [id, null]; }); }))
+        .then(function (rows) { var o = {}; rows.forEach(function (r) { if (r[1]) o[r[0]] = { name: r[1].name || r[1].username }; }); return o; });
+    }
+  };
+  dl = {
+    save: function (o) {
+      var blob = new Blob([o.data], { type: "text/csv;charset=utf-8" }), a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = o.filename; document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+      return Promise.resolve();
+    }
+  };
+  function showLogin(msg) {
+    $("loginOv").hidden = false; $("lgErr").textContent = msg || ""; $("lgBtn").disabled = false;
+    setTimeout(function () { $("lgUser").focus(); }, 30);
+  }
+  $("loginForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    $("lgErr").textContent = ""; $("lgBtn").disabled = true; $("lgBtn").textContent = "Đang đăng nhập…";
+    try { await fauth.signInWithEmailAndPassword(emailOf($("lgUser").value), $("lgPass").value); $("lgPass").value = ""; }
+    catch (err) {
+      var c = err && err.code || "";
+      $("lgErr").textContent = /invalid|wrong-password|user-not-found|invalid-credential/.test(c) ? "Sai tên đăng nhập hoặc mật khẩu." : c === "auth/too-many-requests" ? "Đăng nhập sai quá nhiều lần. Thử lại sau ít phút." : "Không đăng nhập được (" + (c || err.message) + ").";
+    }
+    $("lgBtn").disabled = false; $("lgBtn").textContent = "Đăng nhập";
+  });
+  $("logoutBtn").addEventListener("click", function () { fauth.signOut(); });
+
+  async function startSession(u) {
+    var prof;
+    try { prof = await fdb.collection("users").doc(u.uid).get(); }
+    catch (e) { await fauth.signOut(); return showLogin("Không đọc được hồ sơ tài khoản (" + (e.code || e.message) + ")."); }
+    if (!prof.exists) { await fauth.signOut(); return showLogin("Tài khoản chưa được cấp quyền. Liên hệ quản trị viên."); }
+    var p = prof.data() || {};
+    if (p.disabled) { await fauth.signOut(); return showLogin("Tài khoản đã bị khóa. Liên hệ quản trị viên."); }
+    me = { id: u.uid, name: p.name || p.username || "" };
+    nameCache[u.uid] = me.name;
+    perm.admin = p.role === "admin"; perm.write = true;
+    $("loginOv").hidden = true; $("offline").hidden = true;
+    $("whoMe").innerHTML = "Đăng nhập: <b>" + esc(me.name) + "</b>";
+    renderRole();
+    col = db.collection("tasks"); actCol = db.collection("activity");
+    unsubs.push(col.onSnapshot(function (snap) {
+      tasks = snap.docs.map(function (d) {
+        var x = d.data() || {};
+        return { id: d.id, title: x.title, note: x.note, status: normStatus(x.status), priority: x.priority, due: x.due, dueTime: x.dueTime, unit: x.unit, unitOther: x.unitOther, person: x.person, assignee: x.assignee, linkType: x.linkType, linkRef: x.linkRef,
+          order: typeof x.order === "number" ? x.order : (x.createdAt || 0), createdAt: x.createdAt, updatedAt: x.updatedAt, statusSince: x.statusSince, startedAt: x.startedAt, completedAt: x.completedAt, sample: !!x.sample };
+      });
+      loaded = true; refreshSelects();
+      if (editingId && !find(editingId)) closeSheet();
+      renderAll();
+    }, function () { loaded = true; $("offline").hidden = false; perm.write = false; renderRole(); renderAll(); }));
+    unsubs.push(actCol.orderBy("at", "desc").limit(60).onSnapshot(function (snap) {
+      acts = snap.docs.map(function (d) { var x = d.data() || {}; x.id = d.id; return x; });
+      renderBell(); if (drawerOpen) renderDrawer();
+    }, function () {}));
+    unsubs.push(db.doc("config/team").onSnapshot(function (s) {
+      var x = s.exists ? s.data() : null; members = x && Array.isArray(x.members) ? x.members.filter(function (n) { return typeof n === "string"; }) : [];
+      refreshSelects();
+    }, function () {}));
+  }
+  fauth.onAuthStateChanged(function (u) {
+    stopAll();
+    if (u) return startSession(u);
+    tasks = []; acts = []; members = []; loaded = false; col = null; actCol = null;
+    me = { id: null, name: "" }; perm.admin = false; perm.write = false;
+    $("whoMe").textContent = ""; renderRole(); renderAll(); showLogin();
+  });
+})();
+</script>
+</body>
+</html>

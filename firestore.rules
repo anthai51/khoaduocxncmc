@@ -69,5 +69,20 @@ service cloud.firestore {
       allow read: if active();
       allow write: if (active() && request.auth.uid == uid) || isAdmin();
     }
+
+    // Bảng theo dõi tiến độ công việc (dùng chung tài khoản)
+    match /td_tasks/{id} {
+      allow read, create, update: if active();
+      allow delete: if isAdmin();
+    }
+    match /td_activity/{id} {
+      allow read: if active();
+      allow create: if active() && request.resource.data.actorId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+    match /td_config/{doc} {
+      allow read: if active();
+      allow write: if isAdmin();
+    }
   }
 }
