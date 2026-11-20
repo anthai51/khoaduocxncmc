@@ -23,7 +23,7 @@
   ];
   var LABEL = {}; FIELDS.forEach(function (f) { LABEL[f[0]] = f[1]; });
 
-  var me = null, isAdmin = false, all = [], editing = null;
+  var me = null, isAdmin = false, all = [], editing = null, myProfile = null;
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function emailOf(u) { u = String(u || '').trim().toLowerCase(); return u.indexOf('@') >= 0 ? u : u + '@' + DOMAIN; }
@@ -93,9 +93,12 @@
     var pane = $('pane-hoso'); pane.innerHTML = '<p class="tk-muted">Đang tải hồ sơ…</p>';
     try {
       var s = await db.collection('profiles').doc(me.id).get();
+      myProfile = s.exists ? s.data() : null;
+      var btn = '<div class="tk-row"><p class="tk-muted tk-small">Bạn có thể tự cập nhật thông tin của mình. Mọi thay đổi được ghi lại người sửa và thời gian.</p><button class="btn btn--primary tk-sm" type="button" id="editMine">' + (s.exists ? 'Sửa thông tin của tôi' : 'Nhập hồ sơ của tôi') + '</button></div>';
       pane.innerHTML = s.exists
-        ? '<div class="tk-cards">' + profileHtml(s.data()) + '</div><p class="tk-muted tk-small">Thông tin chưa đúng? Báo quản trị viên của Khoa để cập nhật.</p>'
-        : '<div class="tk-card"><p>Chưa có hồ sơ cho tài khoản này.' + (isAdmin ? ' Bạn có thể nhập ở tab “Hồ sơ giảng viên”.' : ' Liên hệ quản trị viên của Khoa.') + '</p></div>';
+        ? btn + '<div class="tk-cards">' + profileHtml(s.data()) + '</div>' + (s.data().updatedAt ? '<p class="tk-muted tk-small">Cập nhật lần cuối: ' + new Date(s.data().updatedAt).toLocaleString('vi-VN') + '</p>' : '')
+        : '<div class="tk-card"><p>Chưa có hồ sơ cho tài khoản này.</p></div>' + btn;
+      $('editMine').addEventListener('click', function () { openEdit({ id: me.id, user: { name: me.name }, p: myProfile }); });
     } catch (e) { pane.innerHTML = '<div class="tk-card"><p class="tk-err">Không tải được hồ sơ (' + esc(e.code || e.message) + ').</p></div>'; }
   }
 
@@ -141,6 +144,9 @@
   $('gvTable').addEventListener('click', function (e) {
     var b = e.target.closest('[data-edit]'); if (!b) return;
     var r = all.filter(function (x) { return x.id === b.dataset.edit; })[0]; if (!r) return;
+    openEdit(r);
+  });
+  function openEdit(r) {
     editing = r; var p = r.p || { hoTen: r.user.name };
     $('editTitle').textContent = 'Hồ sơ: ' + (p.hoTen || r.user.name);
     $('editFields').innerHTML = FIELDS.map(function (f) {
@@ -148,7 +154,7 @@
     }).join('');
     $('editMsg').textContent = ''; $('tkModal').hidden = false;
     $('editFields').querySelector('input').focus();
-  });
+  }
   function closeEdit() { $('tkModal').hidden = true; editing = null; }
   $('editClose').addEventListener('click', closeEdit);
   $('tkModal').addEventListener('click', function (e) { if (e.target === $('tkModal')) closeEdit(); });
@@ -160,7 +166,9 @@
     try {
       await db.collection('profiles').doc(editing.id).set(data, { merge: true });
       editing.p = Object.assign({}, editing.p || {}, data);
-      closeEdit(); renderAll(); if (editing === null && me) loadMine();
+      var self = editing.id === me.id;
+      all.forEach(function (x) { if (x.id === editing.id) x.p = editing.p; });
+      closeEdit(); if (isAdmin) renderAll(); if (self) loadMine();
     } catch (err) { $('editMsg').textContent = 'Không lưu được (' + (err.code || err.message) + ').'; }
   });
 })();

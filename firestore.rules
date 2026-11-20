@@ -88,7 +88,10 @@ service cloud.firestore {
     // Hồ sơ giảng viên: chỉ chính người đó và quản trị viên được xem
     match /profiles/{uid} {
       allow read: if (active() && request.auth.uid == uid) || isAdmin();
-      allow write: if isAdmin();
+      allow create: if isAdmin() || (active() && request.auth.uid == uid);
+      allow update: if isAdmin()
+        || (active() && request.auth.uid == uid && request.resource.data.get('stt', null) == resource.data.get('stt', null));
+      allow delete: if isAdmin();
     }
   }
 }
