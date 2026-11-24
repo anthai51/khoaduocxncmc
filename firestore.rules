@@ -93,5 +93,14 @@ service cloud.firestore {
         || (active() && request.auth.uid == uid && request.resource.data.get('stt', null) == resource.data.get('stt', null));
       allow delete: if isAdmin();
     }
+  
+    // ===== Hồ sơ Khoa (đồng bộ từ Google Sheet bằng Apps Script; Apps Script ghi bằng quyền IAM) =====
+    function hsViewer() {
+      return isAdmin() || (active() && exists(/databases/$(database)/documents/hoso_meta/access)
+        && request.auth.uid in get(/databases/$(database)/documents/hoso_meta/access).data.uids);
+    }
+    match /hoso/{id} { allow read: if hsViewer(); allow write: if isAdmin(); }
+    match /hoso_admin/{id} { allow read, write: if isAdmin(); }
+    match /hoso_meta/{doc} { allow read: if hsViewer(); allow write: if isAdmin(); }
   }
 }

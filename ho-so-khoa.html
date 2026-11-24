@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hồ sơ Khoa | Khoa Dược - Xét nghiệm</title>
+  <meta name="description" content="Hồ sơ, kế hoạch, công văn và quy chế dành cho giảng viên Khoa Dược - Xét nghiệm (cần đăng nhập).">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="assets/img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css?v=20261124r">
+  <link rel="stylesheet" href="assets/css/ho-so-khoa.css?v=1">
+</head>
+<body data-parent="ho-so-khoa.html">
+  <div id="site-header"></div>
+  <main class="hs">
+    <section class="hs-hero">
+      <div class="container hs-hero__in">
+        <div class="hs-hero__text">
+          <p class="hs-eyebrow"><span class="hs-dot"></span>Ban chủ nhiệm Khoa &amp; Bộ môn · cần đăng nhập</p>
+          <h1>Hồ sơ Khoa</h1>
+          <p class="hs-lead">Toàn bộ hồ sơ, kế hoạch, công văn, quy chế và thông tin công tác của Khoa Dược - Xét nghiệm, cập nhật tự động từ Google Sheet quản lý hồ sơ.</p>
+          <label class="hs-search" id="hsSearchWrap" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input id="hsSearch" type="search" placeholder="Tìm nhanh: giáo án, lịch thi, quy chế, số công văn…" autocomplete="off">
+            <kbd>/</kbd>
+          </label>
+        </div>
+        <dl class="hs-stats" id="hsStats" hidden>
+          <div><dt>Danh mục</dt><dd id="stSec">0</dd></div>
+          <div><dt>Mục hồ sơ</dt><dd id="stRow">0</dd></div>
+          <div><dt>Liên kết</dt><dd id="stLink">0</dd></div>
+        </dl>
+      </div>
+      <svg class="hs-hero__art" viewBox="0 0 600 400" aria-hidden="true">
+        <g fill="none" stroke="currentColor" stroke-width="1.2">
+          <rect x="330" y="60" width="170" height="220" rx="14"/><rect x="360" y="40" width="170" height="220" rx="14"/>
+          <path d="M385 90h110M385 120h120M385 150h90M385 180h115M385 210h70"/>
+          <circle cx="250" cy="260" r="60"/><path d="M250 225v35l24 18"/>
+        </g>
+      </svg>
+    </section>
+
+    <div class="container">
+      <div id="hsBoot" class="hs-boot"><span class="hs-spin"></span>Đang kiểm tra đăng nhập…</div>
+
+      <form id="hsLogin" class="hs-login" hidden autocomplete="on">
+        <div class="hs-login__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <h2>Đăng nhập để xem Hồ sơ Khoa</h2>
+        <p class="hs-muted">Dùng tài khoản chung của Khoa (giống Quản lý phòng thực hành, Theo dõi tiến độ CV).</p>
+        <label>Tên đăng nhập<input id="lgUser" autocomplete="username" required placeholder="VD: số điện thoại của bạn"></label>
+        <label>Mật khẩu<input id="lgPass" type="password" autocomplete="current-password" required></label>
+        <p id="lgErr" class="hs-err" role="alert"></p>
+        <button class="hs-btn hs-btn--primary" id="lgBtn" type="submit">Đăng nhập</button>
+      </form>
+
+      <div id="hsApp" class="hs-app" hidden>
+        <aside class="hs-side" id="hsSide" aria-label="Danh mục hồ sơ"></aside>
+        <section class="hs-main" id="hsMain" aria-live="polite"></section>
+      </div>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+
+  <script src="assets/js/layout.js?v=20261124u"></script>
+  <script src="assets/js/main.js?v=20261120f"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="phong-thuc-hanh/firebase-config.js?v=2"></script>
+  <script src="assets/js/ho-so-khoa.js?v=1"></script>
+</body>
+</html>
