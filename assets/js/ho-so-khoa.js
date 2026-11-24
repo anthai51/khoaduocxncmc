@@ -179,9 +179,16 @@
   function tableHtml(p, d, hl) {
     var cols = []; for (var j = 0; j < p.W; j++) if (p.used[j]) cols.push(j);
     var ed = isAdmin && !hl;
+    // cột có nội dung dài nhất (trung bình) được rộng; cột chỉ chứa mã/số ngắn thì gọn lại
+    var avg = {}, wide = -1, best = 0;
+    cols.forEach(function (j) {
+      var n = 0, L = 0; p.items.forEach(function (it) { if (it.r && it.r[j] && it.r[j].t && !it.r[j].u) { n++; L += it.r[j].t.length; } });
+      avg[j] = n ? L / n : 0; if (avg[j] > best) { best = avg[j]; wide = j; }
+    });
+    var cl = function (j) { return j === wide ? 'hs-wide' : (avg[j] && avg[j] <= 16 ? 'hs-num' : ''); };
     var act = function (i) { return ed ? '<td class="hs-act"><button data-mv="' + i + ':-1" title="Chuyển lên">' + ico('up') + '</button><button data-mv="' + i + ':1" title="Chuyển xuống">' + ico('down') + '</button><button data-ed="' + i + '" title="Sửa">' + ico('edit') + '</button><button data-ins="' + i + '" title="Chèn dòng phía dưới">' + ico('below') + '</button><button data-del="' + i + '" title="Xóa">' + ico('trash') + '</button></td>' : ''; };
     var h = '<div class="hs-tablewrap"><table class="hs-table"><thead><tr>' +
-      cols.map(function (j) { var L = (p.labels[j] || '').split(' · '), last = L.pop(); return '<th>' + (L.length ? '<small class="hs-thp">' + esc(L.join(' · ')) + '</small>' : '') + esc(last) + '</th>'; }).join('') + (ed ? '<th class="hs-act"></th>' : '') + '</tr></thead><tbody>';
+      cols.map(function (j) { var L = (p.labels[j] || '').split(' · '), last = L.pop(); return '<th class="' + cl(j) + '">' + (L.length ? '<small class="hs-thp">' + esc(L.join(' · ')) + '</small>' : '') + esc(last) + '</th>'; }).join('') + (ed ? '<th class="hs-act"></th>' : '') + '</tr></thead><tbody>';
     var any = false;
     p.items.forEach(function (it) {
       if (it.g) {
@@ -193,7 +200,7 @@
       any = true;
       h += '<tr>' + cols.map(function (j) {
         var c = it.r[j], lab = p.labels[j] || '';
-        var cls = (j === cols[0] && c && isNum(c.t)) ? ' class="hs-stt"' : (c && c.t && c.t.length > 160 ? ' class="hs-long"' : '');
+        var cls = (j === cols[0] && c && isNum(c.t)) ? ' class="hs-stt"' : (c && c.t && c.t.length > 160 ? ' class="hs-long ' + cl(j) + '"' : (cl(j) ? ' class="' + cl(j) + '"' : ''));
         return '<td' + cls + ' data-l="' + esc(lab) + '">' + cellHtml(c) + '</td>';
       }).join('') + act(it.i) + '</tr>';
     });
