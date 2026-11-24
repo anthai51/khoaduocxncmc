@@ -200,7 +200,7 @@
       any = true;
       h += '<tr>' + cols.map(function (j) {
         var c = it.r[j], lab = p.labels[j] || '';
-        var cls = (j === cols[0] && c && isNum(c.t)) ? ' class="hs-stt"' : (c && c.t && c.t.length > 160 ? ' class="hs-long ' + cl(j) + '"' : (cl(j) ? ' class="' + cl(j) + '"' : ''));
+        var cls = (j === cols[0] && c && isNum(c.t)) ? ' class="hs-stt"' : (c && c.t && c.t.length > 160 ? ' class="hs-long ' + cl(j) + '"' : (cl(j) && !(cl(j) === 'hs-num' && c && c.t && c.t.length > 20) ? ' class="' + cl(j) + '"' : ''));
         return '<td' + cls + ' data-l="' + esc(lab) + '">' + cellHtml(c) + '</td>';
       }).join('') + act(it.i) + '</tr>';
     });

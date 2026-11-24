@@ -111,6 +111,7 @@
 .hs-table td{padding:11px 14px;border-bottom:1px solid #eef1f5;vertical-align:top;line-height:1.5;min-width:90px}
 .hs-table td.hs-wide{min-width:260px;font-weight:500;color:var(--ink)}
 .hs-table td.hs-num{white-space:nowrap;min-width:0}
+.hs-table th.hs-num{min-width:0}
 .hs-table tbody tr:not(.hs-grow):hover td{background:#f7faff}
 .hs-table tr:last-child td{border-bottom:0}
 .hs-stt{width:1%;color:#94a3b8!important;font:500 13px "IBM Plex Mono",monospace;text-align:center;min-width:44px!important}
