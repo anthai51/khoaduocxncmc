@@ -10,6 +10,13 @@
    ========================================================== */
 window.TIN_TUC = [
   {
+    tieuDe: "Thầy thuốc Ưu tú, TS.BS Nguyễn Quang Thông vinh dự đón nhận Huân chương Lao động hạng Ba của Chủ tịch nước",
+    ngay: "20/11/2026",
+    tomTat: "Tại buổi họp mặt kỷ niệm 44 năm Ngày Nhà giáo Việt Nam, Hiệu trưởng Trường Cao đẳng Y tế Cần Thơ vinh dự đón nhận Huân chương Lao động hạng Ba; Khoa Dược - Xét nghiệm được công nhận Tập thể Lao động xuất sắc. (Nguồn: Tạp chí điện tử Việt - Đức)",
+    anh: "assets/img/tin-tuc/huan-chuong-lao-dong-hang-ba.jpg",
+    link: "bai-viet/huan-chuong-lao-dong-hang-ba-hieu-truong.html"
+  },
+  {
     tieuDe: "Họp mặt kỷ niệm 44 năm Ngày Nhà giáo Việt Nam (20/11/1982 - 20/11/2026)",
     ngay: "20/11/2026",
     tomTat: "Ngày 20/11/2026, Trường Cao đẳng Y tế Cần Thơ tổ chức buổi Họp mặt kỷ niệm 44 năm Ngày Nhà giáo Việt Nam. Tập thể giảng viên Khoa Dược - Xét nghiệm cùng tham dự buổi họp mặt trong không khí trang trọng, ấm áp.",

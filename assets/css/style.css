@@ -1105,3 +1105,6 @@ html{accent-color:var(--leaf);scrollbar-color:#b9cfbf transparent}
 .tt__date time{font:inherit;color:inherit}
 .tt__body{padding:0}
 #tin-tuc .section__head{text-align:center}
+.tt-cap{font-size:13px;color:#8a929c;text-align:center;padding-top:8px}
+.tt-source{margin-top:24px;padding:14px 18px;border-left:3px solid #0b4f9c;background:#f3f7fb;font-size:14.5px;color:#3a4049;border-radius:0 6px 6px 0}
+.tt-source a{color:#0b4f9c;font-weight:600}
