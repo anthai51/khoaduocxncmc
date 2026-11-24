@@ -15,7 +15,7 @@ const MENU = [
     { title: 'Công đoàn', href: 'cong-doan.html' },
     { title: 'Đoàn khoa', href: 'doan-khoa.html' },
   ]},
-  { title: 'Kế hoạch', href: 'ke-hoach.html' },
+  { title: 'Thông báo', href: 'ke-hoach.html' },
   { title: 'Văn bản', href: 'van-ban.html' },
   { title: 'Tài liệu chuyên ngành', href: 'tai-lieu-chuyen-nganh.html' },
   { title: 'Thành tích', href: 'thanh-tich.html' },
