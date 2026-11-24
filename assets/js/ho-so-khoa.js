@@ -302,7 +302,7 @@
         var auto = mode !== 'edit' && j === cols[0] && /^(stt|tt)/i.test(lab) ? nextStt(d, idx) : '';
         var long = (c.t || '').length > 80;
         return '<fieldset><legend>' + esc(lab) + '</legend>' + (long ? '<textarea name="t' + j + '" rows="4">' + esc(c.t || '') + '</textarea>' : '<input name="t' + j + '" value="' + esc(c.t || auto) + '">') +
-          '<input name="u' + j + '" type="url" class="hs-in-url" value="' + esc(c.u || '') + '" placeholder="Đường link (nếu có)"></fieldset>';
+          (noLink(d, lab) ? '' : '<input name="u' + j + '" type="url" class="hs-in-url" value="' + esc(c.u || '') + '" placeholder="Đường link (nếu có)">') + '</fieldset>';
       }).join('');
     }
     modal(mode === 'edit' ? 'Sửa dòng' : isGroup ? 'Thêm nhóm' : 'Thêm dòng', body, async function (m) {
@@ -310,7 +310,7 @@
       if (isGroup) { row = { c: [{ t: fd.get('g').trim() }] }; if (fd.get('gu')) row.c.push({ t: 'Link folder', u: fd.get('gu').trim() }); }
       else {
         var W = Math.max(p.W, cols[cols.length - 1] + 1), c = [];
-        for (var j = 0; j < W; j++) c.push(cols.indexOf(j) >= 0 ? { t: String(fd.get('t' + j) || '').trim(), u: String(fd.get('u' + j) || '').trim() } : ((src && src.c[j]) || { t: '' }));
+        for (var j = 0; j < W; j++) c.push(cols.indexOf(j) >= 0 ? { t: String(fd.get('t' + j) || '').trim(), u: fd.has('u' + j) ? String(fd.get('u' + j) || '').trim() : ((src && src.c[j] && src.c[j].u) || '') } : ((src && src.c[j]) || { t: '' }));
         row = { c: c };
       }
       var rows = d.rows.slice();
@@ -318,6 +318,7 @@
       await saveRows(d, rows);
     });
   }
+  function noLink(d, lab) { return (d.noLink || []).indexOf(lab) >= 0; }
   function nextStt(d, idx) {
     for (var i = idx; i >= 0; i--) { var t = d.rows[i] && d.rows[i].c[0] && d.rows[i].c[0].t; if (/^\d+$/.test(t || '')) return String(+t + 1); }
     return '1';
@@ -325,12 +326,13 @@
   /* Quản lý cột: đổi tên, thêm, xóa, đổi thứ tự. Tiêu đề nhiều tầng được gộp thành 1 dòng tiêu đề. */
   function colEditor(d) {
     var p = d._p || (d._p = parse(d.rows));
-    var cols = []; for (var j = 0; j < p.W; j++) if (p.used[j]) cols.push({ j: j, name: p.labels[j] || '' });
+    var cols = []; for (var j = 0; j < p.W; j++) if (p.used[j]) cols.push({ j: j, name: p.labels[j] || '', link: !noLink(d, p.labels[j] || '') });
     if (!cols.length) cols = [{ j: -1, name: 'NỘI DUNG' }];
     var title = p.title.join('\n');
     function list() {
       return cols.map(function (c, k) {
         return '<div class="hs-colrow"><input data-k="' + k + '" value="' + esc(c.name) + '" placeholder="Tên cột">' +
+          '<label class="hs-colrow__lk" title="Hiện ô nhập đường link khi sửa dòng"><input type="checkbox" data-lk="' + k + '"' + (c.link !== false ? ' checked' : '') + '>Link</label>' +
           '<button type="button" data-cu="' + k + '" title="Lên">' + ico('up') + '</button><button type="button" data-cd="' + k + '" title="Xuống">' + ico('down') + '</button>' +
           '<button type="button" data-cx="' + k + '" title="Xóa cột">' + ico('trash') + '</button></div>';
       }).join('');
@@ -340,7 +342,10 @@
       '<button type="button" class="hs-btn hs-btn--ghost" id="colAdd">' + ico('plus') + 'Thêm cột</button></div>' +
       '<p class="hs-muted hs-small">Xóa cột sẽ xóa luôn dữ liệu của cột đó ở mọi dòng.</p>';
     var m = modal('Quản lý cột – ' + d.ten, body, async function (m) {
-      m.querySelectorAll('#colList input').forEach(function (inp) { cols[+inp.getAttribute('data-k')].name = inp.value.trim(); });
+      m.querySelectorAll('#colList input[data-k]').forEach(function (inp) { cols[+inp.getAttribute('data-k')].name = inp.value.trim(); });
+      m.querySelectorAll('#colList input[data-lk]').forEach(function (inp) { cols[+inp.getAttribute('data-lk')].link = inp.checked; });
+      var nl = cols.filter(function (c) { return c.link === false; }).map(function (c) { return c.name; });
+      await db.collection(d.riengTu ? 'hoso_admin' : 'hoso').doc(d.id).update({ noLink: nl }); d.noLink = nl;
       var t = m.querySelector('[name=title]').value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
       var body = d.rows.slice(p.hdrEnd).map(function (r, ii) {
         var isG = p.items.some(function (it) { return it.i === p.hdrEnd + ii && it.g; });
@@ -352,7 +357,8 @@
       await saveRows(d, rows);
     });
     function redraw() {
-      m.querySelectorAll('#colList input').forEach(function (inp) { cols[+inp.getAttribute('data-k')].name = inp.value; });
+      m.querySelectorAll('#colList input[data-k]').forEach(function (inp) { cols[+inp.getAttribute('data-k')].name = inp.value; });
+      m.querySelectorAll('#colList input[data-lk]').forEach(function (inp) { cols[+inp.getAttribute('data-lk')].link = inp.checked; });
       m.querySelector('#colList').innerHTML = list();
     }
     m.addEventListener('click', function (e) {
@@ -362,7 +368,7 @@
       else if (b.hasAttribute('data-cx')) { var k = +b.getAttribute('data-cx'); if (cols.length > 1 && confirm('Xóa cột "' + (cols[k].name || 'không tên') + '"?')) cols.splice(k, 1); }
       else { var k2 = +(b.getAttribute('data-cu') || b.getAttribute('data-cd')), dir = b.hasAttribute('data-cu') ? -1 : 1, t = cols[k2 + dir]; if (t) { cols[k2 + dir] = cols[k2]; cols[k2] = t; } }
       m.querySelector('#colList').innerHTML = list();
-      if (b.id === 'colAdd') { var ins = m.querySelectorAll('#colList input'); ins[ins.length - 1].focus(); }
+      if (b.id === 'colAdd') { var ins = m.querySelectorAll('#colList input[data-k]'); ins[ins.length - 1].focus(); }
     });
   }
 
