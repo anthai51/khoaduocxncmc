@@ -1115,3 +1115,6 @@ html{accent-color:var(--leaf);scrollbar-color:#b9cfbf transparent}
 .tt-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .tt-pair .tt-fig img{aspect-ratio:3/2;object-fit:cover}
 @media (max-width:640px){.tt-pair{grid-template-columns:1fr}}
+/* chừa chỗ cho dấu tiếng Việt chồng (Ễ, Ỗ…) trên dòng đầu khi cắt dòng */
+.tt__title{line-height:1.42;padding-top:.22em;margin-top:-.22em}
+.tt__item--main .tt__title{margin-top:calc(28px - .22em)}
