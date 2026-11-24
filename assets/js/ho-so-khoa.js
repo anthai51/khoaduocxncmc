@@ -320,6 +320,12 @@
   }
   function noLink(d, lab) { return (d.noLink || []).indexOf(lab) >= 0; }
   function nextStt(d, idx) {
+    var c0 = d.rows[idx] && d.rows[idx].c[0] && d.rows[idx].c[0].t;
+    if (c0 && !isNum(c0)) { // chèn ngay dưới tiêu đề nhóm: lấy số lớn nhất trong nhóm + 1 (nhóm xếp giảm dần)
+      var mx = 0;
+      for (var k = idx + 1; k < d.rows.length; k++) { var t0 = d.rows[k].c[0] && d.rows[k].c[0].t; if (t0 && !isNum(t0)) break; if (isNum(t0)) mx = Math.max(mx, +t0); }
+      if (mx) return String(mx + 1);
+    }
     for (var i = idx; i >= 0; i--) { var t = d.rows[i] && d.rows[i].c[0] && d.rows[i].c[0].t; if (/^\d+$/.test(t || '')) return String(+t + 1); }
     return '1';
   }
