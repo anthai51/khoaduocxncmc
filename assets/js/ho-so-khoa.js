@@ -181,7 +181,7 @@
     var ed = isAdmin && !hl;
     var act = function (i) { return ed ? '<td class="hs-act"><button data-mv="' + i + ':-1" title="Chuyển lên">' + ico('up') + '</button><button data-mv="' + i + ':1" title="Chuyển xuống">' + ico('down') + '</button><button data-ed="' + i + '" title="Sửa">' + ico('edit') + '</button><button data-ins="' + i + '" title="Chèn dòng phía dưới">' + ico('below') + '</button><button data-del="' + i + '" title="Xóa">' + ico('trash') + '</button></td>' : ''; };
     var h = '<div class="hs-tablewrap"><table class="hs-table"><thead><tr>' +
-      cols.map(function (j) { return '<th>' + esc(p.labels[j] || '') + '</th>'; }).join('') + (ed ? '<th class="hs-act"></th>' : '') + '</tr></thead><tbody>';
+      cols.map(function (j) { var L = (p.labels[j] || '').split(' · '), last = L.pop(); return '<th>' + (L.length ? '<small class="hs-thp">' + esc(L.join(' · ')) + '</small>' : '') + esc(last) + '</th>'; }).join('') + (ed ? '<th class="hs-act"></th>' : '') + '</tr></thead><tbody>';
     var any = false;
     p.items.forEach(function (it) {
       if (it.g) {
