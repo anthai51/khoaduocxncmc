@@ -132,6 +132,7 @@
       var list = by[g[0]]; if (!list) return;
       h += '<div class="hs-navg"><p class="hs-navg__t" style="--c:' + g[2] + '">' + ico(g[1]) + esc(g[0]) + '</p>';
       list.forEach(function (d) {
+        if (d.lienKet) { h += '<a class="hs-nav" href="' + esc(d.lienKet) + '" style="--c:' + g[2] + '"><span class="hs-nav__dot"></span><span>' + esc(d.ten) + '</span>' + ico('ext', 'hs-i hs-i--sm') + '</a>'; return; }
         h += '<button class="hs-nav ' + (current === d.id ? 'is-on' : '') + '" data-go="' + d.id + '" style="--c:' + g[2] + '"><span class="hs-nav__dot"></span><span>' + esc(d.ten) + '</span>' +
           (d.riengTu ? ico('lock', 'hs-i hs-i--sm') : '<em>' + counts(d).rows + '</em>') + '</button>';
       });
@@ -150,6 +151,7 @@
       h += '<h3 class="hs-gt" style="--c:' + g[2] + '">' + ico(g[1]) + esc(g[0]) + '</h3><div class="hs-cards">';
       list.forEach(function (d, i) {
         var n = counts(d);
+        if (d.lienKet) { h += '<a class="hs-card" href="' + esc(d.lienKet) + '" style="--c:' + g[2] + ';--d:' + (i * 40) + 'ms"><span class="hs-card__ico">' + ico(g[1]) + '</span><span class="hs-card__t">' + esc(d.ten) + '</span><span class="hs-card__m">' + ico('ext', 'hs-i hs-i--sm') + 'Mở trang ' + esc(d.lienKetTen || '') + '</span><span class="hs-card__go">' + ico('arrow') + '</span></a>'; return; }
         h += '<button class="hs-card" data-go="' + d.id + '" style="--c:' + g[2] + ';--d:' + (i * 40) + 'ms">' +
           '<span class="hs-card__ico">' + ico(g[1]) + '</span><span class="hs-card__t">' + esc(d.ten) + '</span>' +
           '<span class="hs-card__m">' + (d.riengTu ? ico('lock', 'hs-i hs-i--sm') + 'Chỉ Admin · ' : '') + n.rows + ' mục · ' + n.links + ' liên kết</span>' +
@@ -420,6 +422,7 @@
     if (h === '_quyen' && isAdmin) return renderAccess();
     var d = docs.filter(function (x) { return x.id === h; })[0];
     curDoc = d || null;
+    if (d && d.lienKet) { location.href = d.lienKet; return; }
     if (d) renderDoc(d); else { current = ''; renderSide(); renderOverview(); }
     var m = $('hsMain'); if (m.getBoundingClientRect().top < 0) m.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
