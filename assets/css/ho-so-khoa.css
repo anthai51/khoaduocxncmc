@@ -204,3 +204,11 @@
 .hs-modal .hs-err{padding:0 24px;margin:4px 0 0}
 .hs-modal__bar{display:flex;gap:10px;align-items:center;padding:14px 24px 20px;border-top:1px solid #eef1f5;margin-top:8px}
 @media (max-width:720px){.hs-act{width:auto;text-align:left}.hs-table td.hs-act::before{display:none!important}}
+.hs-colrow{display:flex;gap:6px;align-items:center;margin-bottom:8px}
+.hs-colrow input{flex:1}
+.hs-colrow button{border:1px solid #e2e8f0;background:#fff;width:36px;height:40px;border-radius:9px;display:grid;place-items:center;color:#64748b;cursor:pointer;flex:none}
+.hs-colrow button:hover{color:#0b4f9c;border-color:#93c5fd}
+.hs-colrow button[data-cx]:hover{color:#c92a2a;border-color:#f5c2c2}
+.hs-colrow .hs-i{width:16px;height:16px}
+.hs-lbl{font-size:13.5px;font-weight:600;color:#334155;margin:4px 0 8px}
+.hs-act button[data-mv]{width:24px}

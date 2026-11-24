@@ -27,6 +27,9 @@
     id: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 8h2M15 12h2M7 16h10"/>',
     scale: '<path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1ZM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10M12 3v18M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>',
     layers: '<path d="m12 2 10 5-10 5L2 7Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/>',
+    up: '<path d="m18 15-6-6-6 6"/>',
+    down: '<path d="m6 9 6 6 6-6"/>',
+    cols: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
     edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
     trash: '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>',
@@ -106,7 +109,7 @@
       var isGroup = f.length <= 2 && c0.t && !isNum(c0.t) && !c0.u && f.slice(1).every(function (x) { return x.u; }) && c0.t.length < 120;
       return isGroup ? { g: c0.t, links: f.slice(1), i: r.i } : { r: r.c, i: r.i };
     });
-    return { title: title, labels: labels, used: used, items: items, W: W, hdrEnd: k };
+    return { title: title, labels: labels, used: used, items: items, W: W, hdrEnd: k, hdrStart: h };
   }
 
   /* ---------------- trạng thái ---------------- */
@@ -174,7 +177,7 @@
   function tableHtml(p, d, hl) {
     var cols = []; for (var j = 0; j < p.W; j++) if (p.used[j]) cols.push(j);
     var ed = isAdmin && !hl;
-    var act = function (i) { return ed ? '<td class="hs-act"><button data-ed="' + i + '" title="Sửa">' + ico('edit') + '</button><button data-ins="' + i + '" title="Chèn dòng phía dưới">' + ico('below') + '</button><button data-del="' + i + '" title="Xóa">' + ico('trash') + '</button></td>' : ''; };
+    var act = function (i) { return ed ? '<td class="hs-act"><button data-mv="' + i + ':-1" title="Chuyển lên">' + ico('up') + '</button><button data-mv="' + i + ':1" title="Chuyển xuống">' + ico('down') + '</button><button data-ed="' + i + '" title="Sửa">' + ico('edit') + '</button><button data-ins="' + i + '" title="Chèn dòng phía dưới">' + ico('below') + '</button><button data-del="' + i + '" title="Xóa">' + ico('trash') + '</button></td>' : ''; };
     var h = '<div class="hs-tablewrap"><table class="hs-table"><thead><tr>' +
       cols.map(function (j) { return '<th>' + esc(p.labels[j] || '') + '</th>'; }).join('') + (ed ? '<th class="hs-act"></th>' : '') + '</tr></thead><tbody>';
     var any = false;
@@ -204,7 +207,7 @@
       '<p class="hs-meta"><b>' + n.rows + '</b> mục · <b>' + n.links + '</b> liên kết' + (d.capNhat ? ' · cập nhật ' + fmtTime(d.capNhat) : '') + (d.riengTu ? ' · ' + ico('lock', 'hs-i hs-i--sm') + 'Chỉ Admin xem' : '') + '</p></div>' +
       '<div class="hs-mh__r"><label class="hs-filter">' + '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>' +
       '<input id="hsFilter" type="search" placeholder="Lọc trong mục này…"></label>' +
-      (isAdmin ? '<button class="hs-btn hs-btn--primary" data-add="row">' + ico('plus') + 'Thêm dòng</button><button class="hs-btn hs-btn--ghost" data-add="group">' + ico('plus') + 'Thêm nhóm</button><button class="hs-btn hs-btn--ghost" data-add="doc">' + ico('edit') + 'Danh mục</button>' : '') +
+      (isAdmin ? '<button class="hs-btn hs-btn--primary" data-add="row">' + ico('plus') + 'Thêm dòng</button><button class="hs-btn hs-btn--ghost" data-add="group">' + ico('plus') + 'Thêm nhóm</button><button class="hs-btn hs-btn--ghost" data-add="cols">' + ico('cols') + 'Cột</button><button class="hs-btn hs-btn--ghost" data-add="doc">' + ico('edit') + 'Danh mục</button>' : '') +
       '</div></header>';
     h += '<div id="hsBody">' + (p.items.length ? tableHtml(p, d) : '<p class="hs-muted">Trang tính này chưa có nội dung.</p>') + '</div>';
     $('hsMain').innerHTML = h;
@@ -310,6 +313,50 @@
     for (var i = idx; i >= 0; i--) { var t = d.rows[i] && d.rows[i].c[0] && d.rows[i].c[0].t; if (/^\d+$/.test(t || '')) return String(+t + 1); }
     return '1';
   }
+  /* Quản lý cột: đổi tên, thêm, xóa, đổi thứ tự. Tiêu đề nhiều tầng được gộp thành 1 dòng tiêu đề. */
+  function colEditor(d) {
+    var p = d._p || (d._p = parse(d.rows));
+    var cols = []; for (var j = 0; j < p.W; j++) if (p.used[j]) cols.push({ j: j, name: p.labels[j] || '' });
+    if (!cols.length) cols = [{ j: -1, name: 'NỘI DUNG' }];
+    var title = p.title.join('\n');
+    function list() {
+      return cols.map(function (c, k) {
+        return '<div class="hs-colrow"><input data-k="' + k + '" value="' + esc(c.name) + '" placeholder="Tên cột">' +
+          '<button type="button" data-cu="' + k + '" title="Lên">' + ico('up') + '</button><button type="button" data-cd="' + k + '" title="Xuống">' + ico('down') + '</button>' +
+          '<button type="button" data-cx="' + k + '" title="Xóa cột">' + ico('trash') + '</button></div>';
+      }).join('');
+    }
+    var body = '<label>Tiêu đề phía trên bảng (không bắt buộc)<textarea name="title" rows="2">' + esc(title) + '</textarea></label>' +
+      '<div><p class="hs-lbl">Các cột (theo thứ tự trái → phải)</p><div id="colList">' + list() + '</div>' +
+      '<button type="button" class="hs-btn hs-btn--ghost" id="colAdd">' + ico('plus') + 'Thêm cột</button></div>' +
+      '<p class="hs-muted hs-small">Xóa cột sẽ xóa luôn dữ liệu của cột đó ở mọi dòng.</p>';
+    var m = modal('Quản lý cột – ' + d.ten, body, async function (m) {
+      m.querySelectorAll('#colList input').forEach(function (inp) { cols[+inp.getAttribute('data-k')].name = inp.value.trim(); });
+      var t = m.querySelector('[name=title]').value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
+      var body = d.rows.slice(p.hdrEnd).map(function (r, ii) {
+        var isG = p.items.some(function (it) { return it.i === p.hdrEnd + ii && it.g; });
+        if (isG) return { c: r.c };
+        return { c: cols.map(function (c) { return c.j >= 0 ? (r.c[c.j] || { t: '' }) : { t: '' }; }) };
+      });
+      var rows = t.map(function (x) { return { c: [{ t: x }] }; })
+        .concat([{ c: cols.map(function (c) { return { t: c.name }; }) }]).concat(body);
+      await saveRows(d, rows);
+    });
+    function redraw() {
+      m.querySelectorAll('#colList input').forEach(function (inp) { cols[+inp.getAttribute('data-k')].name = inp.value; });
+      m.querySelector('#colList').innerHTML = list();
+    }
+    m.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-cu],[data-cd],[data-cx],#colAdd'); if (!b) return;
+      redraw();
+      if (b.id === 'colAdd') cols.push({ j: -1, name: '' });
+      else if (b.hasAttribute('data-cx')) { var k = +b.getAttribute('data-cx'); if (cols.length > 1 && confirm('Xóa cột "' + (cols[k].name || 'không tên') + '"?')) cols.splice(k, 1); }
+      else { var k2 = +(b.getAttribute('data-cu') || b.getAttribute('data-cd')), dir = b.hasAttribute('data-cu') ? -1 : 1, t = cols[k2 + dir]; if (t) { cols[k2 + dir] = cols[k2]; cols[k2] = t; } }
+      m.querySelector('#colList').innerHTML = list();
+      if (b.id === 'colAdd') { var ins = m.querySelectorAll('#colList input'); ins[ins.length - 1].focus(); }
+    });
+  }
+
   function docEditor(d) {
     var opts = GROUPS.map(function (g) { return '<option' + (d && d.nhom === g[0] ? ' selected' : '') + '>' + esc(g[0]) + '</option>'; }).join('');
     var body = '<label>Tên danh mục<input name="ten" value="' + esc(d ? d.ten : '') + '" required></label>' +
@@ -343,9 +390,20 @@
     if ((b = e.target.closest('[data-add]'))) {
       var k = b.getAttribute('data-add');
       if (k === 'doc') return docEditor(d);
+      if (k === 'cols') return colEditor(d);
       return rowEditor(d, d.rows.length - 1, k === 'group' ? 'group' : 'add');
     }
     if ((b = e.target.closest('[data-ed]'))) return rowEditor(d, +b.getAttribute('data-ed'), 'edit');
+    if ((b = e.target.closest('[data-mv]'))) {
+      var a = b.getAttribute('data-mv').split(':'), i0 = +a[0], dir = +a[1], pp = d._p || (d._p = parse(d.rows));
+      var idxs = pp.items.map(function (it) { return it.i; }), pos = idxs.indexOf(i0), j0 = idxs[pos + dir];
+      if (j0 == null) return;
+      var rr = d.rows.slice(), A = { c: rr[i0].c.slice() }, B = { c: rr[j0].c.slice() };
+      // giữ nguyên số thứ tự ở cột STT, chỉ đổi chỗ nội dung
+      if (A.c[0] && B.c[0] && isNum(A.c[0].t) && isNum(B.c[0].t)) { var s0 = A.c[0]; A.c[0] = B.c[0]; B.c[0] = s0; }
+      rr[i0] = B; rr[j0] = A;
+      return saveRows(d, rr);
+    }
     if ((b = e.target.closest('[data-ins]'))) return rowEditor(d, +b.getAttribute('data-ins'), 'add');
     if ((b = e.target.closest('[data-del]'))) {
       var i = +b.getAttribute('data-del'), txt = (d.rows[i].c || []).map(function (c) { return c.t; }).filter(Boolean).slice(0, 2).join(' – ');
