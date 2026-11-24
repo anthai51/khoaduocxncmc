@@ -178,3 +178,29 @@
   .hs-link{white-space:normal}
 }
 @media (prefers-reduced-motion:reduce){.hs *,.hs *::before{animation:none!important;transition:none!important}}
+
+/* ===== chỉnh sửa (Admin) ===== */
+.hs-act{width:1%;white-space:nowrap;text-align:right}
+.hs-act button{border:0;background:none;width:30px;height:30px;border-radius:8px;display:inline-grid;place-items:center;color:#94a3b8;cursor:pointer;transition:background .15s,color .15s}
+.hs-act button:hover{background:#eef4fc;color:#0b4f9c}
+.hs-act button[data-del]:hover{background:#fdecec;color:#c92a2a}
+.hs-act .hs-i{width:16px;height:16px}
+.hs-table tr:not(:hover) td.hs-act button{opacity:.45}
+.hs-btn--danger{background:#fff;border-color:#f5c2c2;color:#c92a2a;height:40px;font-weight:500}
+.hs-btn--danger:hover{background:#fdecec}
+.hs-modal{position:fixed;inset:0;z-index:1000;background:rgba(10,25,50,.45);backdrop-filter:blur(3px);display:grid;place-items:center;padding:20px;animation:hsFade .15s ease}
+@keyframes hsFade{from{opacity:0}}
+.hs-modal__box{background:#fff;border-radius:18px;width:min(640px,100%);max-height:90vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(10,25,50,.35);animation:hsIn .2s ease}
+.hs-modal__box h3{margin:0;padding:22px 24px 12px;font-size:19px;color:#14213d}
+.hs-modal__body{padding:4px 24px 8px;overflow:auto;display:flex;flex-direction:column;gap:12px}
+.hs-modal__body label,.hs-modal__body fieldset{display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:600;color:#334155;border:0;margin:0;padding:0}
+.hs-modal__body legend{font-size:13px;font-weight:600;color:#475569;margin-bottom:6px;padding:0}
+.hs-modal__body input,.hs-modal__body textarea,.hs-modal__body select{font:inherit;font-weight:400;font-size:14.5px;border:1px solid #d5dce5;border-radius:10px;padding:10px 12px;width:100%;box-sizing:border-box}
+.hs-modal__body input:focus,.hs-modal__body textarea:focus,.hs-modal__body select:focus{outline:0;border-color:#0d6efd;box-shadow:0 0 0 3px rgba(13,110,253,.12)}
+.hs-modal__body .hs-in-url{font-size:13px;padding:7px 12px;color:#0b4f9c;background:#f8fafc}
+.hs-modal__body .hs-chk{flex-direction:row;align-items:center;font-weight:500}
+.hs-modal__body .hs-chk input{width:18px;height:18px}
+.hs-small{font-size:13px;margin:0}
+.hs-modal .hs-err{padding:0 24px;margin:4px 0 0}
+.hs-modal__bar{display:flex;gap:10px;align-items:center;padding:14px 24px 20px;border-top:1px solid #eef1f5;margin-top:8px}
+@media (max-width:720px){.hs-act{width:auto;text-align:left}.hs-table td.hs-act::before{display:none!important}}

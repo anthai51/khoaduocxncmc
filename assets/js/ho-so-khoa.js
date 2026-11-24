@@ -1,5 +1,5 @@
-/* HỒ SƠ KHOA — dữ liệu đồng bộ từ Google Sheet "QUẢN LÝ HỒ SƠ KHOA" bằng Apps Script
-   (xem thư mục apps-script/). Chỉ Admin và những người có tên trong hoso_meta/access được xem
+/* HỒ SƠ KHOA — dữ liệu lưu trực tiếp trong Firestore (hoso, hoso_admin), Admin sửa ngay trên web.
+   Chỉ Admin và những người có tên trong hoso_meta/access được xem
    (Trưởng khoa, Phó Trưởng khoa, Trưởng/Phụ trách Bộ môn). Bảo mật do Firestore rules đảm nhiệm. */
 (function () {
   'use strict';
@@ -27,6 +27,10 @@
     id: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 8h2M15 12h2M7 16h10"/>',
     scale: '<path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1ZM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10M12 3v18M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>',
     layers: '<path d="m12 2 10 5-10 5L2 7Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+    trash: '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>',
+    below: '<path d="M12 5v14M5 12h14"/><path d="M4 21h16"/>',
     home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z"/>',
     lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
     ext: '<path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
@@ -95,14 +99,14 @@
       }
     });
     labels = labels.map(function (l) { return l.filter(function (v, i, a) { return a.indexOf(v) === i; }).join(' · '); });
-    var body = rows.slice(k).filter(function (r) { return filled(r).length; });
+    var body = rows.map(function (r, i) { r.i = i; return r; }).slice(k).filter(function (r) { return filled(r).length; });
     var used = labels.map(function (l, j) { return !!l || body.some(function (r) { return r.c[j] && (r.c[j].t || r.c[j].u); }); });
     var items = body.map(function (r) {
       var f = filled(r), c0 = r.c[0] || { t: '' };
       var isGroup = f.length <= 2 && c0.t && !isNum(c0.t) && !c0.u && f.slice(1).every(function (x) { return x.u; }) && c0.t.length < 120;
-      return isGroup ? { g: c0.t, links: f.slice(1) } : { r: r.c };
+      return isGroup ? { g: c0.t, links: f.slice(1), i: r.i } : { r: r.c, i: r.i };
     });
-    return { title: title, labels: labels, used: used, items: items, W: W };
+    return { title: title, labels: labels, used: used, items: items, W: W, hdrEnd: k };
   }
 
   /* ---------------- trạng thái ---------------- */
@@ -156,25 +160,28 @@
 
   function emptyState() {
     return '<div class="hs-empty"><div class="hs-empty__ico">' + ico('folder') + '</div><h3>Chưa có dữ liệu</h3>' +
-      '<p>Dữ liệu sẽ xuất hiện sau khi Admin cài Apps Script đồng bộ trong Google Sheet "QUẢN LÝ HỒ SƠ KHOA" và chạy lần đầu.</p></div>';
+      '<p>Admin bấm “Thêm danh mục” để tạo danh mục hồ sơ đầu tiên.</p></div>';
   }
 
+  function fmtTime(t) { t = t && t.toDate ? t.toDate() : null; return t ? t.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' · ' + t.toLocaleDateString('vi-VN') : ''; }
   function syncInfo() {
-    var t = meta.dongBoLuc && meta.dongBoLuc.toDate ? meta.dongBoLuc.toDate() : null;
-    var s = t ? 'Đồng bộ lúc ' + t.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' · ' + t.toLocaleDateString('vi-VN') : 'Chưa đồng bộ';
-    var btn = isAdmin && meta.sheetUrl ? '<a class="hs-btn hs-btn--ghost" href="' + esc(meta.sheetUrl) + '" target="_blank" rel="noopener">' + ico('ext') + 'Mở Google Sheet gốc</a>' : '';
-    return '<div class="hs-sync"><span class="hs-live"></span>' + s + btn + '</div>';
+    var last = null; docs.forEach(function (d) { if (d.capNhat && d.capNhat.toDate && (!last || d.capNhat.toDate() > last.toDate())) last = d.capNhat; });
+    var s = last ? 'Cập nhật lần cuối ' + fmtTime(last) : '';
+    var btn = isAdmin ? '<button class="hs-btn hs-btn--primary" id="hsNewDoc">' + ico('plus') + 'Thêm danh mục</button>' : '';
+    return '<div class="hs-sync">' + (s ? '<span class="hs-live"></span>' + s : '') + btn + '</div>';
   }
 
   function tableHtml(p, d, hl) {
     var cols = []; for (var j = 0; j < p.W; j++) if (p.used[j]) cols.push(j);
+    var ed = isAdmin && !hl;
+    var act = function (i) { return ed ? '<td class="hs-act"><button data-ed="' + i + '" title="Sửa">' + ico('edit') + '</button><button data-ins="' + i + '" title="Chèn dòng phía dưới">' + ico('below') + '</button><button data-del="' + i + '" title="Xóa">' + ico('trash') + '</button></td>' : ''; };
     var h = '<div class="hs-tablewrap"><table class="hs-table"><thead><tr>' +
-      cols.map(function (j) { return '<th>' + esc(p.labels[j] || '') + '</th>'; }).join('') + '</tr></thead><tbody>';
+      cols.map(function (j) { return '<th>' + esc(p.labels[j] || '') + '</th>'; }).join('') + (ed ? '<th class="hs-act"></th>' : '') + '</tr></thead><tbody>';
     var any = false;
     p.items.forEach(function (it) {
       if (it.g) {
         if (hl) return;
-        h += '<tr class="hs-grow"><td colspan="' + cols.length + '"><span class="hs-gchip">' + esc(it.g) + '</span>' + it.links.map(linkBtn).join('') + '</td></tr>';
+        h += '<tr class="hs-grow"><td colspan="' + cols.length + '"><span class="hs-gchip">' + esc(it.g) + '</span>' + it.links.map(linkBtn).join('') + '</td>' + act(it.i) + '</tr>';
         return;
       }
       if (hl && !norm(it.r.map(function (c) { return c && c.t; }).join(' ')).includes(hl)) return;
@@ -183,7 +190,7 @@
         var c = it.r[j], lab = p.labels[j] || '';
         var cls = (j === cols[0] && c && isNum(c.t)) ? ' class="hs-stt"' : (c && c.t && c.t.length > 160 ? ' class="hs-long"' : '');
         return '<td' + cls + ' data-l="' + esc(lab) + '">' + cellHtml(c) + '</td>';
-      }).join('') + '</tr>';
+      }).join('') + act(it.i) + '</tr>';
     });
     h += '</tbody></table></div>';
     return hl && !any ? '' : h;
@@ -194,10 +201,10 @@
     var h = '<header class="hs-mh" style="--c:' + g[2] + '"><div><p class="hs-crumb"><button data-go="">Tổng quan</button> › ' + esc(d.nhom) + '</p>' +
       '<h2><span class="hs-mh__ico">' + ico(g[1]) + '</span>' + esc(d.ten) + '</h2>' +
       (p.title.length ? '<p class="hs-sub">' + esc(p.title.join(' — ')) + '</p>' : '') +
-      '<p class="hs-meta"><b>' + n.rows + '</b> mục · <b>' + n.links + '</b> liên kết' + (d.riengTu ? ' · ' + ico('lock', 'hs-i hs-i--sm') + 'Chỉ Admin xem' : '') + '</p></div>' +
+      '<p class="hs-meta"><b>' + n.rows + '</b> mục · <b>' + n.links + '</b> liên kết' + (d.capNhat ? ' · cập nhật ' + fmtTime(d.capNhat) : '') + (d.riengTu ? ' · ' + ico('lock', 'hs-i hs-i--sm') + 'Chỉ Admin xem' : '') + '</p></div>' +
       '<div class="hs-mh__r"><label class="hs-filter">' + '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>' +
       '<input id="hsFilter" type="search" placeholder="Lọc trong mục này…"></label>' +
-      (isAdmin && meta.sheetUrl && d.gid != null ? '<a class="hs-btn hs-btn--ghost" href="' + esc(meta.sheetUrl.replace(/#.*$/, '').replace(/\/edit.*$/, '') + '/edit#gid=' + d.gid) + '" target="_blank" rel="noopener">' + ico('ext') + 'Sửa trong Sheet</a>' : '') +
+      (isAdmin ? '<button class="hs-btn hs-btn--primary" data-add="row">' + ico('plus') + 'Thêm dòng</button><button class="hs-btn hs-btn--ghost" data-add="group">' + ico('plus') + 'Thêm nhóm</button><button class="hs-btn hs-btn--ghost" data-add="doc">' + ico('edit') + 'Danh mục</button>' : '') +
       '</div></header>';
     h += '<div id="hsBody">' + (p.items.length ? tableHtml(p, d) : '<p class="hs-muted">Trang tính này chưa có nội dung.</p>') + '</div>';
     $('hsMain').innerHTML = h;
@@ -243,6 +250,110 @@
     };
   }
 
+  /* ---------------- chỉnh sửa (Admin) ---------------- */
+  var curDoc = null;
+  function modal(title, body, onSave, extra) {
+    var m = document.createElement('div'); m.className = 'hs-modal';
+    m.innerHTML = '<form class="hs-modal__box"><h3>' + esc(title) + '</h3><div class="hs-modal__body">' + body + '</div><p class="hs-err" id="mErr"></p>' +
+      '<div class="hs-modal__bar">' + (extra || '') + '<span style="flex:1"></span><button type="button" class="hs-btn hs-btn--ghost" data-x>Hủy</button><button class="hs-btn hs-btn--primary">Lưu</button></div></form>';
+    document.body.appendChild(m);
+    var close = function () { m.remove(); };
+    m.addEventListener('click', function (e) { if (e.target === m || e.target.closest('[data-x]')) close(); });
+    m.querySelector('form').addEventListener('submit', async function (e) {
+      e.preventDefault(); var b = this.querySelector('.hs-btn--primary'); b.disabled = true; b.textContent = 'Đang lưu…';
+      try { await onSave(m); close(); } catch (err) { m.querySelector('#mErr').textContent = 'Lỗi: ' + (err.code || err.message); b.disabled = false; b.textContent = 'Lưu'; }
+    });
+    var f = m.querySelector('input,textarea'); if (f) f.focus();
+    return m;
+  }
+  async function saveRows(d, rows) {
+    rows = rows.map(function (r) { return { c: (r.c || []).map(function (c) { var o = { t: c.t || '' }; if (c.u) o.u = c.u; return o; }) }; });
+    var ts = firebase.firestore.FieldValue.serverTimestamp();
+    await db.collection(d.riengTu ? 'hoso_admin' : 'hoso').doc(d.id).update({ rows: rows, capNhat: ts, boi: me.uid });
+    d.rows = rows; d.capNhat = firebase.firestore.Timestamp.now(); d._p = null; d._n = null;
+    renderSide(); renderDoc(d);
+  }
+  function rowEditor(d, idx, mode) {
+    var p = d._p || (d._p = parse(d.rows));
+    var cols = []; for (var j = 0; j < Math.max(p.W, 1); j++) if (p.used[j]) cols.push(j);
+    if (!cols.length) cols = [0, 1, 2, 3];
+    var src = mode === 'edit' ? d.rows[idx] : null;
+    var isGroup = mode === 'group' || (src && p.items.some(function (it) { return it.i === idx && it.g; }));
+    var body;
+    if (isGroup) {
+      var lk = src ? (src.c || []).slice(1).filter(function (c) { return c.u; })[0] || {} : {};
+      body = '<label>Tên nhóm (VD: NĂM 2027, Năm học 2026 - 2027)<input name="g" value="' + esc(src ? src.c[0].t : '') + '" required></label>' +
+        '<label>Liên kết thư mục của nhóm (không bắt buộc)<input name="gu" type="url" value="' + esc(lk.u || '') + '" placeholder="https://…"></label>';
+    } else {
+      body = cols.map(function (j) {
+        var c = (src && src.c[j]) || {}, lab = p.labels[j] || ('Cột ' + (j + 1));
+        var auto = mode !== 'edit' && j === cols[0] && /^(stt|tt)/i.test(lab) ? nextStt(d, idx) : '';
+        var long = (c.t || '').length > 80;
+        return '<fieldset><legend>' + esc(lab) + '</legend>' + (long ? '<textarea name="t' + j + '" rows="4">' + esc(c.t || '') + '</textarea>' : '<input name="t' + j + '" value="' + esc(c.t || auto) + '">') +
+          '<input name="u' + j + '" type="url" class="hs-in-url" value="' + esc(c.u || '') + '" placeholder="Đường link (nếu có)"></fieldset>';
+      }).join('');
+    }
+    modal(mode === 'edit' ? 'Sửa dòng' : isGroup ? 'Thêm nhóm' : 'Thêm dòng', body, async function (m) {
+      var fd = new FormData(m.querySelector('form')), row;
+      if (isGroup) { row = { c: [{ t: fd.get('g').trim() }] }; if (fd.get('gu')) row.c.push({ t: 'Link folder', u: fd.get('gu').trim() }); }
+      else {
+        var W = Math.max(p.W, cols[cols.length - 1] + 1), c = [];
+        for (var j = 0; j < W; j++) c.push(cols.indexOf(j) >= 0 ? { t: String(fd.get('t' + j) || '').trim(), u: String(fd.get('u' + j) || '').trim() } : ((src && src.c[j]) || { t: '' }));
+        row = { c: c };
+      }
+      var rows = d.rows.slice();
+      if (mode === 'edit') rows[idx] = row; else rows.splice(idx + 1, 0, row);
+      await saveRows(d, rows);
+    });
+  }
+  function nextStt(d, idx) {
+    for (var i = idx; i >= 0; i--) { var t = d.rows[i] && d.rows[i].c[0] && d.rows[i].c[0].t; if (/^\d+$/.test(t || '')) return String(+t + 1); }
+    return '1';
+  }
+  function docEditor(d) {
+    var opts = GROUPS.map(function (g) { return '<option' + (d && d.nhom === g[0] ? ' selected' : '') + '>' + esc(g[0]) + '</option>'; }).join('');
+    var body = '<label>Tên danh mục<input name="ten" value="' + esc(d ? d.ten : '') + '" required></label>' +
+      '<label>Nhóm<select name="nhom">' + opts + '</select></label>' +
+      (d ? '' : '<label class="hs-chk"><input type="checkbox" name="rieng"> Chỉ Admin xem (thông tin nhạy cảm)</label>') +
+      (d ? '' : '<p class="hs-muted hs-small">Danh mục mới có sẵn 4 cột: STT · Nội dung · Đường link · Ghi chú.</p>');
+    var del = d ? '<button type="button" class="hs-btn hs-btn--danger" id="mDel">' + ico('trash') + 'Xóa danh mục</button>' : '';
+    var m = modal(d ? 'Sửa danh mục' : 'Thêm danh mục', body, async function (m) {
+      var fd = new FormData(m.querySelector('form')), ten = fd.get('ten').trim(), nhom = fd.get('nhom');
+      if (d) {
+        await db.collection(d.riengTu ? 'hoso_admin' : 'hoso').doc(d.id).update({ ten: ten, nhom: nhom });
+        d.ten = ten; d.nhom = nhom; renderSide(); renderDoc(d); return;
+      }
+      var rieng = !!fd.get('rieng'), id = norm(ten).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now().toString(36);
+      var nd = { ten: ten, nhom: nhom, riengTu: rieng, thuTu: docs.length + 1, rows: [{ c: [{ t: 'STT' }, { t: 'NỘI DUNG' }, { t: 'ĐƯỜNG LINK' }, { t: 'GHI CHÚ' }] }],
+        capNhat: firebase.firestore.FieldValue.serverTimestamp(), boi: me.uid };
+      await db.collection(rieng ? 'hoso_admin' : 'hoso').doc(id).set(nd);
+      nd.id = id; nd.capNhat = firebase.firestore.Timestamp.now(); docs.push(nd); location.hash = id;
+    }, del);
+    if (d) m.querySelector('#mDel').onclick = async function () {
+      if (!confirm('Xóa vĩnh viễn danh mục "' + d.ten + '" và toàn bộ ' + counts(d).rows + ' mục bên trong? Không thể hoàn tác.')) return;
+      await db.collection(d.riengTu ? 'hoso_admin' : 'hoso').doc(d.id).delete();
+      docs = docs.filter(function (x) { return x !== d; }); m.remove(); location.hash = '';
+    };
+  }
+  document.addEventListener('click', async function (e) {
+    if (!isAdmin) return;
+    var d = curDoc, b;
+    if (e.target.closest('#hsNewDoc')) return docEditor(null);
+    if (!d) return;
+    if ((b = e.target.closest('[data-add]'))) {
+      var k = b.getAttribute('data-add');
+      if (k === 'doc') return docEditor(d);
+      return rowEditor(d, d.rows.length - 1, k === 'group' ? 'group' : 'add');
+    }
+    if ((b = e.target.closest('[data-ed]'))) return rowEditor(d, +b.getAttribute('data-ed'), 'edit');
+    if ((b = e.target.closest('[data-ins]'))) return rowEditor(d, +b.getAttribute('data-ins'), 'add');
+    if ((b = e.target.closest('[data-del]'))) {
+      var i = +b.getAttribute('data-del'), txt = (d.rows[i].c || []).map(function (c) { return c.t; }).filter(Boolean).slice(0, 2).join(' – ');
+      if (!confirm('Xóa dòng: "' + txt + '"?')) return;
+      var rows = d.rows.slice(); rows.splice(i, 1); await saveRows(d, rows);
+    }
+  });
+
   function route() {
     var h = decodeURIComponent(location.hash.slice(1));
     current = h;
@@ -250,6 +361,7 @@
     if (q) return renderSearch();
     if (h === '_quyen' && isAdmin) return renderAccess();
     var d = docs.filter(function (x) { return x.id === h; })[0];
+    curDoc = d || null;
     if (d) renderDoc(d); else { current = ''; renderSide(); renderOverview(); }
     var m = $('hsMain'); if (m.getBoundingClientRect().top < 0) m.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -311,7 +423,6 @@
         var s2 = await db.collection('hoso_admin').get();
         docs = docs.concat(s2.docs.map(function (x) { return Object.assign({ id: x.id }, x.data()); }));
       }
-      try { var m = await db.doc('hoso_meta/info').get(); meta = m.exists ? m.data() : {}; } catch (e) { meta = {}; }
       docs.sort(function (a, b) { return (a.thuTu || 99) - (b.thuTu || 99) || String(a.ten).localeCompare(String(b.ten), 'vi'); });
       var tr = 0, tl = 0; docs.forEach(function (d) { var n = counts(d); tr += n.rows; tl += n.links; });
       $('stSec').textContent = docs.length; $('stRow').textContent = tr; $('stLink').textContent = tl;
