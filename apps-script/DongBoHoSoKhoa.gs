@@ -170,7 +170,7 @@ function base_() { return 'https://firestore.googleapis.com/v1/projects/' + PROJ
 function goi_(method, path, body) {
   var res = UrlFetchApp.fetch(base_() + path, {
     method: method, contentType: 'application/json', muteHttpExceptions: true,
-    headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
+    headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken(), 'X-Goog-User-Project': PROJECT_ID },
     payload: body ? JSON.stringify(body) : undefined
   });
   var code = res.getResponseCode();
