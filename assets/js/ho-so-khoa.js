@@ -211,7 +211,7 @@
       '<input id="hsFilter" type="search" placeholder="Lọc trong mục này…"></label>' +
       (isAdmin ? '<button class="hs-btn hs-btn--primary" data-add="row">' + ico('plus') + 'Thêm dòng</button><button class="hs-btn hs-btn--ghost" data-add="group">' + ico('plus') + 'Thêm nhóm</button><button class="hs-btn hs-btn--ghost" data-add="cols">' + ico('cols') + 'Cột</button><button class="hs-btn hs-btn--ghost" data-add="doc">' + ico('edit') + 'Danh mục</button>' : '') +
       '</div></header>';
-    h += '<div id="hsBody">' + (p.items.length ? tableHtml(p, d) : '<p class="hs-muted">Trang tính này chưa có nội dung.</p>') + '</div>';
+    h += '<div id="hsBody">' + (p.items.length || p.W ? tableHtml(p, d) + (p.items.length ? '' : '<p class="hs-muted hs-pad">Chưa có dòng nào' + (isAdmin ? ' – bấm “Thêm dòng” để nhập.' : '.') + '</p>') : '<p class="hs-muted">Danh mục này chưa có nội dung.</p>') + '</div>';
     $('hsMain').innerHTML = h;
     $('hsFilter').addEventListener('input', function () {
       var v = norm(this.value.trim());
