@@ -30,6 +30,7 @@
     up: '<path d="m18 15-6-6-6 6"/>',
     down: '<path d="m6 9 6 6 6-6"/>',
     cols: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18"/>',
+    xls: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13l4 5M12 13l-4 5"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
     edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
     trash: '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>',
@@ -172,7 +173,7 @@
   function syncInfo() {
     var last = null; docs.forEach(function (d) { if (d.capNhat && d.capNhat.toDate && (!last || d.capNhat.toDate() > last.toDate())) last = d.capNhat; });
     var s = last ? 'Cập nhật lần cuối ' + fmtTime(last) : '';
-    var btn = isAdmin ? '<button class="hs-btn hs-btn--primary" id="hsNewDoc">' + ico('plus') + 'Thêm danh mục</button>' : '';
+    var btn = '<button class="hs-btn hs-btn--ghost hs-btn--xls" data-xls="*">' + ico('xls') + 'Xuất tất cả ra Excel</button>' + (isAdmin ? '<button class="hs-btn hs-btn--primary" id="hsNewDoc">' + ico('plus') + 'Thêm danh mục</button>' : '');
     return '<div class="hs-sync">' + (s ? '<span class="hs-live"></span>' + s : '') + btn + '</div>';
   }
 
@@ -216,6 +217,7 @@
       '<p class="hs-meta"><b>' + n.rows + '</b> mục · <b>' + n.links + '</b> liên kết' + (d.capNhat ? ' · cập nhật ' + fmtTime(d.capNhat) : '') + (d.riengTu ? ' · ' + ico('lock', 'hs-i hs-i--sm') + 'Chỉ Admin xem' : '') + '</p></div>' +
       '<div class="hs-mh__r"><label class="hs-filter">' + '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>' +
       '<input id="hsFilter" type="search" placeholder="Lọc trong mục này…"></label>' +
+      '<button class="hs-btn hs-btn--ghost hs-btn--xls" data-xls="' + d.id + '">' + ico('xls') + 'Xuất Excel</button>' +
       (isAdmin ? '<button class="hs-btn hs-btn--primary" data-add="row">' + ico('plus') + 'Thêm dòng</button><button class="hs-btn hs-btn--ghost" data-add="group">' + ico('plus') + 'Thêm nhóm</button><button class="hs-btn hs-btn--ghost" data-add="cols">' + ico('cols') + 'Cột</button><button class="hs-btn hs-btn--ghost" data-add="doc">' + ico('edit') + 'Danh mục</button>' : '') +
       '</div></header>';
     h += '<div id="hsBody">' + (p.items.length || p.W ? tableHtml(p, d) + (p.items.length ? '' : '<p class="hs-muted hs-pad">Chưa có dòng nào' + (isAdmin ? ' – bấm “Thêm dòng” để nhập.' : '.') + '</p>') : '<p class="hs-muted">Danh mục này chưa có nội dung.</p>') + '</div>';
@@ -431,6 +433,60 @@
       if (!confirm('Xóa dòng: "' + txt + '"?')) return;
       var rows = d.rows.slice(); rows.splice(i, 1); await saveRows(d, rows);
     }
+  });
+
+  /* ---------------- xuất Excel ---------------- */
+  var xlsxReady = null;
+  function loadXlsx() {
+    if (window.XLSX) return Promise.resolve();
+    return xlsxReady || (xlsxReady = new Promise(function (ok, no) {
+      var sc = document.createElement('script'); sc.src = 'assets/js/vendor-xlsx.min.js';
+      sc.onload = ok; sc.onerror = function () { xlsxReady = null; no(new Error('Không tải được thư viện Excel')); }; document.head.appendChild(sc);
+    }));
+  }
+  function sheetOf(d) {
+    var p = d._p || (d._p = parse(d.rows)), cols = [];
+    for (var j = 0; j < p.W; j++) if (p.used[j]) cols.push(j);
+    var aoa = [], links = [], widths = cols.map(function () { return 6; });
+    (d.rows || []).forEach(function (r, i) {
+      var c = r.c || [];
+      if (!c.some(function (x) { return x && (x.t || x.u); })) return;
+      var head = i < p.hdrEnd;
+      var line = cols.map(function (j, k) {
+        var x = c[j] || {}, t = x.t || (x.u ? 'Link' : '');
+        if (x.u) links.push([aoa.length, k, x.u]);
+        var L = Math.min(60, Math.max.apply(null, String(t).split('\n').map(function (z) { return z.length; }).concat([0])));
+        if (L + 2 > widths[k]) widths[k] = L + 2;
+        return (!head && k === 0 && /^\d{1,4}$/.test(t)) ? +t : t;
+      });
+      // dòng tiêu đề/nhóm: dồn chữ sang ô đầu
+      if (!line[0] && line.filter(Boolean).length === 1 && !head) { var only = line.filter(Boolean)[0]; line = line.map(function () { return ''; }); line[0] = only; }
+      aoa.push(line);
+    });
+    var ws = XLSX.utils.aoa_to_sheet(aoa);
+    links.forEach(function (l) { var a = XLSX.utils.encode_cell({ r: l[0], c: l[1] }); if (ws[a]) ws[a].l = { Target: l[2], Tooltip: l[2] }; });
+    ws['!cols'] = widths.map(function (w) { return { wch: w }; });
+    return ws;
+  }
+  function sheetName(t, used) {
+    var n = String(t).replace(/[\\\/\?\*\[\]:]/g, ' ').slice(0, 31).trim() || 'Sheet', k = 2, b = n;
+    while (used[n]) n = b.slice(0, 28) + ' (' + (k++) + ')';
+    used[n] = 1; return n;
+  }
+  async function exportXls(which, btn) {
+    var old = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="hs-spin"></span>Đang tạo file…';
+    try {
+      await loadXlsx();
+      var list = which === '*' ? docs.filter(function (d) { return !d.lienKet; }) : docs.filter(function (d) { return d.id === which; });
+      var wb = XLSX.utils.book_new(), used = {};
+      list.forEach(function (d) { XLSX.utils.book_append_sheet(wb, sheetOf(d), sheetName(d.ten, used)); });
+      var day = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(wb, (which === '*' ? 'Ho so Khoa DXN' : list[0].ten) + ' - ' + day + '.xlsx');
+    } catch (e) { alert('Không xuất được file: ' + e.message); }
+    btn.disabled = false; btn.innerHTML = old;
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-xls]'); if (b) exportXls(b.getAttribute('data-xls'), b);
   });
 
   function route() {

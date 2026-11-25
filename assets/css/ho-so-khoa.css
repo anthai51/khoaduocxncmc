@@ -221,3 +221,6 @@ a.hs-nav,a.hs-card{text-decoration:none}
 .hs-colrow__lk input{width:16px!important;height:16px;padding:0!important}
 .hs-link{max-width:240px}
 .hs-table td.hs-num,.hs-table th.hs-num{padding-left:10px;padding-right:10px}.hs-table td.hs-num{font-size:13.5px;font-variant-numeric:tabular-nums}
+.hs-btn--xls{color:#15803d;border-color:#c3ebd2;background:#f3fbf6}
+.hs-btn--xls:hover{color:#166534;border-color:#86d6a4}
+.hs-btn .hs-spin{width:14px;height:14px}
