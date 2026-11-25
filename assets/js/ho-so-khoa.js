@@ -447,7 +447,7 @@
   function sheetOf(d) {
     var p = d._p || (d._p = parse(d.rows)), cols = [];
     for (var j = 0; j < p.W; j++) if (p.used[j]) cols.push(j);
-    var aoa = [], links = [], widths = cols.map(function () { return 6; });
+    var hdrRows = 0, aoa = [], links = [], widths = cols.map(function () { return 6; });
     (d.rows || []).forEach(function (r, i) {
       var c = r.c || [];
       if (!c.some(function (x) { return x && (x.t || x.u); })) return;
@@ -455,17 +455,47 @@
       var line = cols.map(function (j, k) {
         var x = c[j] || {}, t = x.t || (x.u ? 'Link' : '');
         if (x.u) links.push([aoa.length, k, x.u]);
-        var L = Math.min(60, Math.max.apply(null, String(t).split('\n').map(function (z) { return z.length; }).concat([0])));
-        if (L + 2 > widths[k]) widths[k] = L + 2;
         return (!head && k === 0 && /^\d{1,4}$/.test(t)) ? +t : t;
       });
       // dòng tiêu đề/nhóm: dồn chữ sang ô đầu
       if (!line[0] && line.filter(Boolean).length === 1 && !head) { var only = line.filter(Boolean)[0]; line = line.map(function () { return ''; }); line[0] = only; }
-      aoa.push(line);
+      aoa.push(line); if (head) hdrRows = aoa.length;
+    });
+    var merges = [];
+    aoa.forEach(function (line, r) {
+      var n = line.filter(function (v) { return v !== '' && v != null; }).length;
+      if (n === 1 && line[0] !== '' && cols.length > 1 && typeof line[0] === 'string') { merges.push({ s: { r: r, c: 0 }, e: { r: r, c: cols.length - 1 } }); return; }
+      var grpLike = n <= 2 && typeof line[0] === 'string' && line[0] && !/^\d/.test(line[0]) && r >= hdrRows;
+      line.forEach(function (t, k) {
+        if (grpLike && k === 0) return;
+        var L = Math.min(60, Math.max.apply(null, String(t).split('\n').map(function (z) { return z.length; }).concat([0])));
+        if (L + 2 > widths[k]) widths[k] = L + 2;
+      });
     });
     var ws = XLSX.utils.aoa_to_sheet(aoa);
-    links.forEach(function (l) { var a = XLSX.utils.encode_cell({ r: l[0], c: l[1] }); if (ws[a]) ws[a].l = { Target: l[2], Tooltip: l[2] }; });
-    ws['!cols'] = widths.map(function (w) { return { wch: w }; });
+    ws['!merges'] = merges;
+    // định dạng: Times New Roman 14, tiêu đề in đậm, có viền, tự xuống dòng
+    var F = { name: 'Times New Roman', sz: 14 }, line = { style: 'thin', color: { rgb: 'BFBFBF' } };
+    var border = { top: line, bottom: line, left: line, right: line };
+    var isLink = {}; links.forEach(function (l) { isLink[l[0] + ':' + l[1]] = l[2]; });
+    for (var r = 0; r < aoa.length; r++) {
+      var filledN = aoa[r].filter(function (v) { return v !== '' && v != null; }).length;
+      var kind = r < hdrRows ? (r === hdrRows - 1 || aoa[r].length && filledN > 1 ? 'hdr' : 'title') : (filledN <= 2 && typeof aoa[r][0] === 'string' && aoa[r][0] && !/^\d/.test(aoa[r][0]) ? 'grp' : 'row');
+      for (var c = 0; c < cols.length; c++) {
+        var a = XLSX.utils.encode_cell({ r: r, c: c });
+        if (!ws[a]) ws[a] = { t: 's', v: '' };
+        var lk = isLink[r + ':' + c];
+        var st = { font: Object.assign({}, F), alignment: { vertical: 'center', wrapText: true } };
+        if (kind !== 'title') st.border = border;
+        if (kind === 'hdr') { st.font.bold = true; st.alignment.horizontal = 'center'; st.fill = { fgColor: { rgb: 'DDEBF7' } }; }
+        if (kind === 'title') { st.font.bold = true; st.alignment.horizontal = 'center'; }
+        if (kind === 'grp') { st.font.bold = true; st.fill = { fgColor: { rgb: 'F2F2F2' } }; }
+        if (kind === 'row' && c === 0) st.alignment.horizontal = 'center';
+        if (lk) { ws[a].l = { Target: lk, Tooltip: lk }; st.font.color = { rgb: '0563C1' }; st.font.underline = true; }
+        ws[a].s = st;
+      }
+    }
+    ws['!cols'] = widths.map(function (w) { return { wch: Math.min(70, Math.round(w * 1.3)) }; });
     return ws;
   }
   function sheetName(t, used) {
